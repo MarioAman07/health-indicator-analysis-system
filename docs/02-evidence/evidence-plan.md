@@ -1,148 +1,199 @@
-# Evidence of Relevance: Plan
+# Evidence of Relevance
 
-**Status:** DRAFT. The plan and interview guide are written. Outreach is the next step. **No discussions have been held and no findings are recorded.**
-**Last updated:** 11 Oct 2026
+**Status:** Plan ready; real user evidence is not yet complete. No discussion should be entered as evidence until it actually happens.
 
-## 1. Why I am doing this
+## 1. Purpose
 
-The diploma requirements ask for evidence that the problem is real for the people who would use the system, normally 3–5 discussions with user representatives. I want to check my assumptions against what people with clinical experience actually say, instead of building the project around guesses.
+The purpose of this activity is to test whether the proposed problem, users, and planned features match real clinical work instead of relying only on literature and design assumptions.
 
-The current direction is still a draft and has not been approved by my supervisor: a decision-support prototype that looks at repeated vital-sign and lab measurements and estimates how a patient's condition is developing, for clinical staff who review those measurements. It is not meant to diagnose, prescribe, or replace clinical judgement.
+The target is **3–5 completed discussions with relevant user representatives**, in line with the diploma requirement.
 
-## 2. What I want to find out
+The current proposed system is a research decision-support prototype that analyzes repeated patient measurements and estimates possible deterioration risk. It is not intended to diagnose, prescribe, or replace clinical judgement.
 
-| ID | Question | What it affects |
+## 2. Questions the evidence should answer
+
+| ID | Question | Project area affected |
 |---|---|---|
 | E1 | How do clinical staff currently notice that a patient may be getting worse? | Problem statement, baseline |
-| E2 | Which measurements do they look at, and where do they see them? | Requirements, prototype |
-| E3 | How well does the current way of working function, and where does it struggle, if at all? | Problem statement, scope |
-| E4 | Are scores, checklists or automated alerts already used? | Baseline, existing systems |
-| E5 | What would they need next to a risk estimate to understand it? | Requirements, UX |
-| E6 | Have they seen alerts that were ignored, and why? | Non-functional requirements, evaluation |
-| E7 | What would stop them from using such a tool? | Risks, scope |
-| E8 | What in my idea is unnecessary or missing? | Scope |
+| E2 | Which measurements do they use and where do they see them? | Requirements, prototype |
+| E3 | Where does the current monitoring process become difficult or fail? | Problem statement, scope |
+| E4 | Are scoring systems, checklists, or automated alerts used? | Existing-system comparison, baseline |
+| E5 | What context is needed next to a risk estimate for it to be understandable? | Requirements, UX |
+| E6 | When are alerts or warnings ignored, and why? | Non-functional requirements, evaluation |
+| E7 | What would make a user distrust or avoid an automated analytical tool? | Risks, requirements |
+| E8 | What is missing or unnecessary in the proposed idea? | Scope |
 
-## 3. Who I want to talk to
+## 3. Intended respondents
 
-Target: **3–5 completed discussions.** Nobody counts until the conversation has actually happened. Nobody is confirmed yet.
+Priority is given to people with real ward or clinical experience:
 
-| Type | Why | How I will try to reach them |
-|---|---|---|
-| Practising doctor | Judges patient condition directly | Personal contacts, referrals |
-| Nurse with ward experience | Takes and reviews vital signs daily | Personal contacts, referrals |
-| Resident or intern | Recent ward experience, more reachable | University and personal contacts |
-| Senior medical student with ward or clinical practice | Reachable, can describe training and ward routines | Medical university students |
+| Respondent type | Reason |
+|---|---|
+| Practising doctor | Directly reviews patient condition and deterioration |
+| Nurse with ward experience | Regularly observes and records vital signs |
+| Resident or intern | Recent practical experience with monitoring and escalation |
+| Senior medical student with ward/clinical practice | Can describe recent clinical routines |
 
-People with real ward experience come first. A student with no clinical practice can give background, but I will not count them as strong user evidence unless my supervisor agrees.
+Hospital IT or health-data specialists may provide useful technical background, but they should not replace the user discussions.
 
-Healthcare data or hospital IT people may be useful for technical questions, but they should not replace the user discussions.
+## 4. Discussion format
 
-## 4. How the discussions work
+- About 10–15 minutes.
+- Text, call, online meeting, or in person.
+- Open and neutral questions.
+- The respondent first describes the current process before the proposed solution is explained in detail.
+- No patient information is requested.
+- No recording unless the respondent explicitly agrees.
 
-- Short and informal: about 15 minutes, by message, call or in person. Text is fine.
-- 8–10 open questions. They talk about their own experience.
-- I do not describe my solution until they have described their current way of working.
-- No recording unless they explicitly agree.
+After each discussion, record only:
 
-After each discussion I write down: date, anonymous ID, general role, method, what they said (in my own words), and which of my assumptions or requirements it affects.
+- date;
+- anonymous respondent ID;
+- general role and relevant experience;
+- method;
+- paraphrased findings;
+- which assumption or requirement the finding affects.
 
-## 5. Privacy
+Names, phone numbers, usernames, private chat screenshots, and patient data must not be committed to the repository.
 
-- I do not ask about individual patients and I do not want any patient information. If it comes up by accident, I leave it out.
-- Participation is voluntary. They can skip any question or stop.
-- At the start I say that I will paraphrase and keep notes anonymous, and I ask permission before using any direct quote.
-- Names, phone numbers and usernames **are not stored in the repository** and I do not commit chat screenshots or exports.
-- I keep a private list of who I spoke to and when, outside the repository. If my supervisor or the committee asks for proof that the discussions took place, I can show it to them in person.
-- Whether informal discussions like this need any university ethics step: [REQUIRES SUPERVISOR APPROVAL].
+## 5. Introductory statement
 
-## 6. Questions for the discussion
+> I am collecting short anonymous feedback for my university diploma project about how clinical staff monitor patient condition. I do not need any patient information. I will only keep a short summary in my own words and your general role. You can skip any question or stop at any time.
 
-I keep them open and neutral. I do not ask "would an ML system be useful?".
+## 6. Interview questions
 
 1. What is your role or level of training, and what clinical experience do you have?
-2. When you need to know whether a patient is stable or getting worse, what do you look at?
-3. Where does that information come from (monitors, lab results, records, something else)?
-4. In practice, how is a possible deterioration usually noticed?
-5. How well does that work? Where does it go wrong or become hard, if it does?
-6. Have you used any scoring system, checklist or automated alert for patient condition? What was your experience?
-7. If a system showed an estimated risk for a patient, what would you want to see next to it to understand it?
-8. Have you seen alerts or warnings that got ignored? If so, why?
-9. What would make you avoid or distrust a system that analyzes patient measurements automatically?
-10. Is there anything important about this that I haven't asked?
+2. When you need to know whether a patient is stable or getting worse, what do you usually look at?
+3. Where does that information come from: monitors, laboratory results, records, or somewhere else?
+4. In practice, how is possible deterioration usually noticed?
+5. How well does the current process work? Where does it get difficult or fail?
+6. Have you used any scoring system, checklist, or automated alert for patient condition? What was your experience?
+7. If a system showed an estimated risk for a patient, what would you need next to the value to understand it?
+8. Have you seen alerts or warnings that were ignored? If so, why?
+9. What would make you avoid or distrust a system that automatically analyzes patient measurements?
+10. Is there anything important that I have not asked?
 
-Follow-ups when needed: "Can you give an example?", "What happened next?", "How often does that happen?", "Who usually sees that?". I do not force every follow-up.
+Optional follow-ups: “Can you give an example?”, “What happened next?”, “How often does that happen?”, “Who normally reacts to that?”
 
-## 7. How I separate evidence from guesses
+## 7. Evidence categories
 
-- **USER-EVIDENCE:** something a real respondent told me in a discussion I held. Only this counts as evidence of relevance.
-- **LITERATURE:** supported by a verified source in `docs/03-literature/literature-matrix.md`. It supports my reasoning but does not replace the discussions.
-- **ASSUMPTION:** my own belief that nobody has confirmed. It is never presented as a finding.
+- **USER-EVIDENCE:** a finding paraphrased from a real discussion held for this project.
+- **LITERATURE:** a finding supported by a publication in the literature matrix.
+- **ASSUMPTION:** project reasoning that has not yet been confirmed by users.
 
-### Evidence register
+Only completed discussions count as user evidence.
 
-| ID | Date | Respondent | Role / experience | Method | What they said (paraphrased) | Effect on project | Type |
-|---|---|---|---|---|---|---|---|
-| EV-01 | | | | | *(empty: no discussion held yet)* | | |
+## 8. Evidence register
 
-### Assumptions to test
+Fill this table only after real discussions.
 
-| ID | Assumption | Based on | How I will test it |
+| ID | Date | Role / experience | Method | Paraphrased finding | Effect on project | Evidence type |
+|---|---|---|---|---|---|---|
+| EV-01 |  |  |  |  |  | USER-EVIDENCE |
+
+Add EV-02, EV-03, and further rows only when the discussions have actually happened.
+
+## 9. Assumptions to test
+
+| ID | Assumption | Test |
+|---|---|---|
+| AS-01 | Clinical staff who review patient measurements are the right primary user | E1–E3 |
+| AS-02 | Trends in repeated measurements are useful to see | E2 |
+| AS-03 | A risk warning needs supporting context | E5 |
+| AS-04 | Excessive or poorly targeted alerts reduce usefulness | E6 |
+| AS-05 | A risk value alone is insufficient for interpretation | E5 |
+| AS-06 | Early monitoring of deterioration is a suitable concrete problem for the proposed system | E1–E3, E8, supervisor feedback |
+
+After the discussions, mark each assumption as supported, partly supported, not supported, or not tested.
+
+## 10. Per-discussion summary template
+
+### EV-XX — anonymous respondent
+
+- Date:
+- General role and experience:
+- Method:
+- Questions covered:
+- Key points:
+- What this confirms or challenges:
+- Project change, if any:
+- Evidence strength: strong / moderate / background only
+
+## 11. Cross-interview synthesis
+
+Complete this only after at least three valid discussions.
+
+| Finding | Respondents supporting/challenging it | Agreement or disagreement | Project decision |
 |---|---|---|---|
-| AS-01 | Clinical staff reviewing patient indicators are a suitable primary user | My proposal draft | E1–E3 and supervisor |
-| AS-02 | Trends in measurements are useful to see | My design reasoning | E2 |
-| AS-03 | Users need some explanation next to a risk warning | Design reasoning and literature | E5 |
-| AS-04 | Too many alerts reduce usefulness | Wong et al. (2021) found a large alert burden in one health system | E6 |
-| AS-05 | A risk score alone is not enough | My design idea | E5 |
-| AS-06 | Early deterioration monitoring is a suitable problem for this diploma | Literature review and scope analysis | User evidence and supervisor approval |
+|  |  |  |  |
 
-After the discussions I will mark each one as supported, partly supported, not supported or not tested.
+The synthesis should explain:
 
-## 8. Outreach
+- where respondents agreed;
+- where they disagreed;
+- which assumptions were wrong or incomplete;
+- which requirements or scope decisions changed;
+- what remains uncertain.
 
-I plan to send **6–8 requests** to get 3 discussions. This is my own expectation that not everyone will reply, not a measured rate. Sending requests is not evidence; only completed discussions are.
+## 12. Evidence-to-requirement traceability
 
-**To a student or resident (informal):**
+Complete this after the discussions.
 
-> Привет! Я делаю диплом в AITU по системе, которая помогает следить за показателями пациентов (давление, пульс, анализы). Мне нужно поговорить с несколькими людьми с клинической практикой: как вы вообще замечаете, что пациенту становится хуже. Это 8–10 коротких вопросов, можно прямо текстом, минут 15. Данные пациентов не нужны, всё анонимно. Если у тебя была практика в отделении, поможешь? Или подскажи, кого ещё можно спросить.
+| Evidence ID | Finding | Requirement affected | Decision |
+|---|---|---|---|
+|  |  |  |  |
 
-**To a doctor or nurse (formal):**
+## 13. Outreach messages
 
-> Здравствуйте! Меня зовут Аман, я студент AITU, делаю дипломный проект по системе, которая помогает отслеживать показатели пациентов (жизненные признаки, анализы). Чтобы понять, нужна ли такая система на самом деле, хочу коротко поговорить с людьми, которые работают с пациентами. Нужно около 15 минут и 8–10 вопросов о том, как у Вас сейчас устроена эта работа. Никаких данных о пациентах не нужно, всё будет анонимно, можно ответить текстом. Если неудобно самому, подскажите, пожалуйста, коллегу. Спасибо!
+### Informal message to a student or resident
 
-## 9. Timeline
+> Привет! Я делаю диплом в AITU по системе, которая помогает анализировать показатели пациентов и замечать возможное ухудшение состояния. Мне нужно коротко поговорить с несколькими людьми с клинической практикой о том, как вы обычно следите за состоянием пациента. Это 8–10 вопросов, можно ответить прямо текстом, примерно 10–15 минут. Данные пациентов не нужны, ответы будут анонимными. Если у тебя была практика в отделении, сможешь помочь? Если нет, может, подскажешь кого-нибудь с такой практикой?
+
+### Formal message to a doctor or nurse
+
+> Здравствуйте! Меня зовут Аман, я студент AITU и делаю дипломный проект по системе анализа показателей пациентов. Для проекта мне нужно понять, как в реальной работе отслеживают возможное ухудшение состояния пациента. Хотел бы задать 8–10 коротких вопросов, это займёт около 10–15 минут и можно ответить текстом. Никакие данные пациентов не нужны, ответы будут использоваться только в анонимном виде. Если Вам будет удобно, буду очень благодарен за помощь. Если неудобно самому, подскажите, пожалуйста, коллегу.
+
+Sending messages is not evidence by itself; only completed discussions count.
+
+## 14. Supervisor questions
+
+Ask the supervisor:
+
+1. Is this short anonymous discussion format acceptable for the diploma?
+2. Is any additional ethics or university approval needed for these discussions?
+3. Does a senior medical student count only when they have actual clinical/ward experience?
+4. Can the supervisor suggest or introduce suitable respondents?
+5. If fewer than three valid discussions can be completed, which alternative form of relevance evidence is acceptable?
+
+Record the actual answers in the supervisor-feedback log without adding assumptions.
+
+## 15. Timeline
 
 | Date | Action |
 |---|---|
-| 11 Oct | Send the first requests |
-| 12 Oct | Call with supervisor: ask the questions in Section 10 |
-| 13–20 Oct | Hold discussions as people reply; update the register right after each one |
-| 21 Oct | Summarize what I learned and link it to requirements |
-| 22–23 Oct | Buffer |
+| 13–14 Oct | Send first outreach messages |
+| 13–20 Oct | Hold discussions and update the register immediately after each one |
+| 18–20 Oct | Follow up and contact additional respondents if fewer than 3 are complete |
+| 21 Oct | Write synthesis and map findings to requirements |
+| 22–23 Oct | Apply confirmed changes to proposal, requirements, and prototype |
 
-**If I have fewer than 3 valid discussions by about 21 Oct:** I will not pad the register. I will record exactly what I have and ask the supervisor which other evidence form is acceptable. The official text also lists observing relevant processes and analyzing available data, and an agreement with a real client.
+If fewer than three valid discussions are obtained, record the true number and ask the supervisor which alternative evidence is acceptable. Do not create or pad responses.
 
-## 10. Questions for my supervisor
+## 16. Completion criteria
 
-1. Can he introduce anyone with clinical or hospital experience?
-2. Is this short, anonymous discussion format acceptable, and is any extra approval needed?
-3. Does a senior medical student without clinical practice count toward the 3–5?
+This component is complete when:
 
-## 11. Open items
+- at least 3 valid discussions with suitable representatives have been completed, or another evidence form has been explicitly accepted by the supervisor;
+- every completed discussion has an anonymous entry;
+- the assumptions have been evaluated against the evidence;
+- a cross-interview synthesis has been written;
+- findings have been linked to affected requirements or scope decisions;
+- private proof of participation can be shown to the supervisor if requested without committing private information to Git.
 
-| Item | Status |
-|---|---|
-| Whether 3–5 suitable respondents will be available | [NOT YET DETERMINED] |
-| Final primary user | [REQUIRES SUPERVISOR APPROVAL] and user evidence |
-| Final project direction (Option B) | [REQUIRES SUPERVISOR APPROVAL] |
-| Whether any ethics step is required | [REQUIRES SUPERVISOR APPROVAL] |
-| Whether students without clinical practice count | [REQUIRES SUPERVISOR APPROVAL] |
-| Changes to requirements from the discussions | [WAITING FOR USER EVIDENCE] |
+## 17. Current open items
 
-## 12. DIP-3 checklist
-
-- [x] Plan, respondent types, questions and privacy rules written
-- [x] Evidence register template prepared
-- [ ] First requests sent
-- [ ] Questions in Section 10 discussed with supervisor
-
-*Collecting the discussions themselves and filling the register is tracked in DIP-4.*
+- Respondents are not yet confirmed in this document.
+- The primary user remains a working definition until evidence is collected.
+- The concrete sepsis direction remains subject to supervisor review.
+- The ethics/approval procedure for the short discussions should be confirmed with the supervisor.
+- Requirement changes cannot be written until real evidence exists.
