@@ -1,125 +1,239 @@
 # Technology Comparison
 
-**Status:** DRAFT. The choices below are proposals. Not yet reviewed by my supervisor [REQUIRES SUPERVISOR APPROVAL].
+**Status:** DRAFT for supervisor review. The technology choices below are preliminary and may be revised after the requirements are finalized and supervisor feedback is received.  
 **Last updated:** 13 Oct 2026
 
-## 1. How I did this
+## 1. Comparison approach
 
-I compared technologies for five decisions. Each has three alternatives and the same eight criteria, chosen because they matter for a one-person Software Engineering project: development complexity, ML integration, performance, maintainability, testing, documentation, deployment, and suitability for an individual student.
+Five key technical decisions were analyzed for the proposed system.
 
-Two kinds of statements appear in the tables:
+For each decision, three reasonable alternatives were compared using project-relevant criteria such as:
 
-- **Facts from documentation or literature**, with a source. A fact that I have not opened in the official docs is marked [MUST VERIFY].
-- **My judgment** about how well an option fits my project (marked "my judgment"). These are planning opinions, not measurements. I used the words "good", "medium" and "weak".
+- development complexity;
+- machine-learning integration;
+- performance;
+- maintainability;
+- testing;
+- documentation;
+- deployment complexity;
+- suitability for an individual Software Engineering diploma project.
 
-The requirements file (`docs/06-requirements.md`) is written after this one. I will link each decision to requirement IDs once they exist.
+The technologies are not selected based only on popularity. The main criterion is how well each option fits the requirements and scope of this project.
 
-I am not choosing by popularity. Where an option is popular but does not fit my project, I say so.
+The current choices are preliminary and will later be linked to the corresponding requirement IDs.
+
+---
 
 ## 2. Decision 1: Backend and API framework
 
-All three alternatives are Python frameworks. I did not consider Java or JavaScript backends, because the machine-learning code is Python, and a second language would force a separate model-serving service. That adds a component with no benefit for a project this size.
+The machine-learning pipeline will be implemented in Python. Therefore, using a Python backend avoids introducing an additional programming language or a separate model-serving component.
 
-| Criterion | FastAPI | Flask | Django with Django REST Framework |
+| Criterion | FastAPI | Flask | Django + Django REST Framework |
 |---|---|---|---|
-| Development complexity | Low to medium. Fact: a small app is a few lines, and request models are declared with Python type hints [MUST VERIFY on docs] | Low. Minimal core, I add validation and docs myself (my judgment) | Higher. A full framework with many conventions (my judgment) |
-| ML integration | Good. Same Python process can load a model file (my judgment) | Good (my judgment) | Good, but more machinery around a model service (my judgment) |
-| Performance | Described by its project as high-performance, built on Starlette and Pydantic [README, vendor claim]. For my load this is not decisive | Adequate for a prototype (my judgment) | Adequate for a prototype (my judgment) |
-| Maintainability | Good. Typed request and response models act as a contract (my judgment) | Medium. Structure is left to me (my judgment) | Good structure, heavier than I need (my judgment) |
-| Testing | Fact: provides a TestClient for pytest [README] | Has a test client [MUST VERIFY] | Has a built-in test framework [MUST VERIFY] |
-| Documentation | Fact: generates interactive OpenAPI documentation (Swagger UI and ReDoc) automatically [README] | Needs extensions (my judgment) [MUST VERIFY] | DRF has schema and docs options [MUST VERIFY] |
-| Deployment | Runs on an ASGI server such as Uvicorn [MUST VERIFY] | Runs on common WSGI servers [MUST VERIFY] | Runs on common servers [MUST VERIFY] |
-| Fit for an individual student | Good: small, one clear way to validate input (my judgment) | Good, but more design decisions on my own (my judgment) | Weaker: more to learn than the project needs (my judgment) |
+| Development complexity | Low to medium. Uses Python type hints and structured request models | Low. Minimal framework, but more project structure must be defined manually | Higher. Full framework with more conventions and built-in components |
+| ML integration | Good. The ML model can be loaded and called directly from Python | Good. Same Python environment can be used | Good, although the framework adds more infrastructure than this prototype requires |
+| Performance | Suitable for API-based applications and more than sufficient for the planned prototype | Sufficient for prototype-scale workloads | Sufficient for prototype-scale workloads |
+| Maintainability | Good. Typed request and response models provide a clear API contract | Medium. More architectural decisions must be defined manually | Good structure, but heavier than required for this project |
+| Testing | Provides API testing utilities and works well with pytest | Includes a testing client and supports pytest-based testing | Provides an established testing framework |
+| Documentation | Automatic OpenAPI schema and interactive API documentation | API documentation usually requires additional configuration or extensions | API schemas and documentation can be provided through DRF tooling |
+| Deployment | Supports ASGI deployment | Commonly deployed through WSGI servers | Supports both WSGI and ASGI deployment |
+| Fit for this project | High | High | Medium |
 
-Official documentation (not opened by me): https://fastapi.tiangolo.com, https://flask.palletsprojects.com, https://docs.djangoproject.com, https://www.django-rest-framework.org. The FastAPI facts above come from its project README, which I saw through repository copies.
+### Selected option: FastAPI
 
-**Selected: FastAPI.** My project needs strict input validation (clinical measurements with ranges and types), a documented API that I can show in the package, and easy API tests. FastAPI covers all three with little code. The cost is that I must be careful with async code; I will use plain synchronous endpoints unless there is a reason not to.
+FastAPI is currently the preferred backend framework.
 
-Component interaction: the dashboard will talk to the API over HTTP with JSON, described by OpenAPI. I considered gRPC and a message queue and rejected both. A single backend with one client does not need them, and they would add complexity without helping any requirement.
+The project requires:
+
+- validation of structured clinical measurements;
+- a clearly documented API;
+- straightforward integration with Python ML code;
+- convenient automated API testing.
+
+FastAPI provides these capabilities while keeping the backend relatively small and understandable for an individual project.
+
+The backend will initially use simple synchronous endpoints unless asynchronous processing becomes necessary.
+
+### Component interaction
+
+The dashboard will communicate with the backend through HTTP using JSON.
+
+The API contract will be described through OpenAPI.
+
+gRPC and message queues were considered but are not selected because the planned prototype has one backend and one client. Introducing additional communication infrastructure would increase complexity without solving a current requirement.
+
+---
 
 ## 3. Decision 2: Data storage
 
-Raw dataset files stay on disk and are never committed. This decision is about the application database that holds demo patient data, stored predictions and model metadata.
+The public clinical dataset used for model development will remain as dataset files and will not be committed to the repository.
+
+The application database is intended only for prototype-related information such as:
+
+- demonstration patient records;
+- stored predictions;
+- model metadata;
+- model version information;
+- evaluation or audit metadata where required.
 
 | Criterion | SQLite | PostgreSQL | Files only (CSV / Parquet) |
 |---|---|---|---|
-| Development complexity | Low. No server to run [MUST VERIFY on sqlite.org] | Medium. Needs a database server and configuration | Low to start, but I must write my own query and update logic (my judgment) |
-| ML integration | Fine through a Python library or an ORM (my judgment) | Fine (my judgment) | Very direct for training data (my judgment) |
-| Performance | Enough for one user and demo-size data (my judgment, [MUST VERIFY] limits) | Better for many users and heavy queries (my judgment) | Fast for whole-file reads, weak for lookups of one patient (my judgment) |
-| Maintainability | Good with a schema and migrations (my judgment) | Good, mature tooling (my judgment) | Weak: no schema enforcement, hard to keep predictions and audit data consistent (my judgment) |
-| Testing | Easy. In-memory or temporary file databases (my judgment) | Needs a test instance or container (my judgment) | Easy for small fixtures (my judgment) |
-| Documentation | Good [MUST VERIFY] | Good [MUST VERIFY] | Format docs only |
-| Deployment | Single file, nothing to install (my judgment) | Container or server needed | Nothing to deploy |
-| Fit for an individual student | Good | Medium: more setup | Good for the ML pipeline only |
+| Development complexity | Low. Serverless database stored in a local file | Medium. Requires a running database service and configuration | Low initially, but application logic for updates and queries must be implemented manually |
+| Python / ML integration | Good through Python libraries and ORM tools | Good through mature Python database libraries and ORM tools | Very direct for training and analytical datasets |
+| Performance | Suitable for a single-user prototype and small application database | Better suited to concurrent users and larger production workloads | Efficient for analytical file reads but less convenient for application-level queries |
+| Maintainability | Good when a defined schema and ORM are used | Good, with mature schema and migration tooling | Lower for application state because schema and relationships are not enforced centrally |
+| Testing | Simple temporary databases can be created for tests | Usually requires a dedicated test database or container | Simple for analytical fixtures |
+| Deployment | No separate database server required | Requires a database service | No database service required |
+| Fit for this project | High | Medium | High for ML data, lower for application state |
 
-Official documentation (not opened by me): https://www.sqlite.org, https://www.postgresql.org/docs/.
+### Selected option: SQLite with an ORM
 
-**Selected: SQLite, accessed through an ORM layer such as SQLAlchemy [MUST VERIFY compatibility], with the training data kept as files.** Why: I need a small store for patients, predictions and model versions, which supports the auditable requirement (every prediction can be traced to a model version). A single file keeps setup, tests and reproduction simple for one person. If I ever needed many users, switching to PostgreSQL would be a configuration change instead of a rewrite. I am not choosing PostgreSQL now, even though it is more common in production, because I would pay setup cost for concurrency my prototype does not need.
+SQLite is currently preferred for the application database.
+
+The prototype does not require high concurrency or a production-scale database server. SQLite provides a simple and reproducible setup while still allowing structured storage of predictions, metadata, and model versions.
+
+An ORM such as SQLAlchemy will reduce coupling between application logic and the database implementation.
+
+If the project later requires PostgreSQL, using an ORM should simplify migration, although database-specific schema or query changes may still be necessary.
+
+The ML training dataset itself will remain file-based.
+
+---
 
 ## 4. Decision 3: Machine-learning approach
 
-| Criterion | Regularized logistic regression | Gradient-boosted trees (e.g. XGBoost or LightGBM) | Recurrent or temporal neural network (e.g. GRU, LSTM) |
+Three model families were considered.
+
+| Criterion | Regularized Logistic Regression | Gradient-Boosted Trees | Recurrent / Temporal Neural Network |
 |---|---|---|---|
-| Development complexity | Low | Medium | High: sequence handling, padding, tuning (my judgment) |
-| Handling missing values | Needs imputation (my judgment) | Fact: XGBoost can handle missing values natively [MUST VERIFY on docs] | Needs imputation or masking (my judgment) |
-| Use of time information | Only through features I build (window summaries, changes) | Same, through features I build (my judgment) | Uses sequences directly (my judgment) |
-| Explainability | Coefficients are readable | Feature importance, and SHAP was used in Lashen et al. 2023 [S: literature matrix #3] | Harder (my judgment) |
-| Evidence in the literature I reviewed | Weak against NEWS in one study: AUROC 0.654 vs 0.682 (Lashen 2023) | XGBoost AUROC 0.778 vs neural network 0.756 and NEWS 0.682 (Lashen 2023). Decision trees and neural networks performed best in a network meta-analysis (Yadgarov 2024), with low certainty | Reported in many sepsis studies (Moor 2021 lists LSTM, GRU, CNN and temporal convolutional networks) |
-| Training cost and reproducibility | Very cheap, easy to reproduce | Cheap on a laptop, reproducible with fixed seeds (my judgment) | More expensive, harder to reproduce exactly (my judgment) |
-| Testing | Easy | Easy | Harder: more moving parts (my judgment) |
-| Fit for an individual student | Good as a baseline | Good as the main model | Risky as the only model (my judgment) |
+| Development complexity | Low | Medium | High |
+| Missing-data handling | Normally requires an explicit imputation strategy | Some implementations such as XGBoost can handle missing values directly | Usually requires imputation, masking, or another explicit missing-data strategy |
+| Use of temporal information | Requires engineered temporal features such as changes and window summaries | Uses engineered temporal features | Can operate directly on ordered sequences |
+| Explainability | Model coefficients are relatively easy to interpret | Feature importance and SHAP-style explanations can be used | Generally more difficult to interpret |
+| Evidence from reviewed literature | Useful as a simple baseline, but did not outperform NEWS in one reviewed study | Strong results in several reviewed studies and suitable for tabular clinical data | Widely studied for sequential clinical prediction |
+| Training cost | Low | Low to medium | Higher |
+| Reproducibility | High | High when versions, seeds, and settings are controlled | More difficult because of greater training complexity |
+| Testing complexity | Low | Low to medium | Higher |
+| Fit for an individual project | High as baseline | High as main model | Medium / higher project risk |
 
-Official documentation (not opened by me): https://scikit-learn.org, https://xgboost.readthedocs.io, https://shap.readthedocs.io.
+### Selected approach
 
-**Selected: gradient-boosted trees on time-window features as the main model, with logistic regression as the required simple baseline.** The evidence is mixed and these studies are not directly comparable, so I am not choosing on a leaderboard number. I choose boosted trees because they handle missing values and tabular window features, are explainable, are cheap to train and reproduce, and fit a one-person project. A recurrent network stays an optional extension only if time remains. A NEWS-style score may be a second reference, but only if it can be built fairly from the dataset (see the proposal).
+The proposed configuration is:
 
-All of this depends on the dataset and the supervisor's decisions (horizon, baseline) [REQUIRES SUPERVISOR APPROVAL].
+**Main model:** gradient-boosted trees  
+**Baseline:** regularized logistic regression
 
-## 5. Decision 4: Dashboard (frontend)
+The main model will use temporal features derived from measurements available up to each prediction time.
 
-| Criterion | Streamlit | React with a charting library | Server-rendered templates (Jinja2 with Plotly) |
+Gradient-boosted trees are preferred because they:
+
+- work well with structured tabular data;
+- can support missing-data handling;
+- are relatively inexpensive to train;
+- support feature-level interpretation;
+- are practical to reproduce and test.
+
+Logistic regression remains important as a transparent and reproducible baseline.
+
+A recurrent neural model such as GRU or LSTM may be considered as an optional extension if time and project scope permit.
+
+The final prediction horizon and baseline configuration will be discussed with the supervisor.
+
+---
+
+## 5. Decision 4: Dashboard / frontend
+
+The prototype requires a minimal interface rather than a production hospital user interface.
+
+| Criterion | Streamlit | React + charting library | Server-rendered templates |
 |---|---|---|---|
-| Development complexity | Low. Python only (my judgment) | High: a second language, a build tool and state handling (my judgment) | Medium (my judgment) |
-| Integration with the API | Calls the FastAPI endpoints over HTTP | Calls the same endpoints | Rendered by the backend itself, which blurs the API boundary |
-| Time-series charts | Supported through charting libraries [MUST VERIFY] | Very flexible | Supported through Plotly [MUST VERIFY] |
-| Maintainability | Good for a small app, limited for custom layouts (my judgment) | Good, with more code to maintain | Medium |
-| Testing | Test the API; UI tests are limited (my judgment) | Mature UI testing tools exist (my judgment) | Backend tests cover most of it |
-| Deployment | One more Python process | Static build, or a dev server | Same process as the backend |
-| Fit for an individual student | Good | Depends on my JavaScript experience: [REQUIRES USER INPUT] | Medium |
+| Development complexity | Low. Python-based | Higher. Requires JavaScript/TypeScript tooling and client-side state management | Medium |
+| Backend integration | Can call FastAPI endpoints over HTTP | Can call the same REST API | Can be integrated directly with the backend |
+| Time-series visualization | Supports built-in charts and external charting libraries | Highly flexible | Can use libraries such as Plotly |
+| Maintainability | Good for a small research prototype | Strong for larger custom applications but requires more frontend code | Medium |
+| Testing | Supports automated application testing; backend API remains independently testable | Mature frontend testing ecosystem | Much of the behaviour can be covered by backend tests |
+| Deployment | Runs as a separate Python application | Requires frontend build/deployment | Can run with the backend |
+| UI flexibility | Medium | High | Medium |
+| Fit for this project | High | Medium | Medium |
 
-Official documentation (not opened by me): https://docs.streamlit.io, https://react.dev, https://plotly.com/python/.
+### Selected option: Streamlit
 
-**Selected: Streamlit, calling the FastAPI backend over HTTP.** My scope says "minimal dashboard". I want the dashboard to be a client of the public API, so the layers stay separate (UI, API, model). That also means the main logic can be tested without the UI. React would give more control, but costs time I would rather spend on pipeline, evaluation and tests. If I turn out to be comfortable with JavaScript, I can swap the frontend without touching the backend.
+Streamlit is currently preferred for the prototype dashboard.
 
-## 6. Decision 5: Packaging and deployment
+The project scope requires a minimal interface that can show:
 
-| Criterion | Docker Compose (API, dashboard) | Python virtual environment with a Makefile | Cloud platform service |
+- patient measurements over time;
+- risk results;
+- warning states;
+- model and context information.
+
+Using Streamlit allows more project time to be spent on the data pipeline, temporal correctness, model evaluation, API design, and automated testing.
+
+The dashboard will call the FastAPI backend rather than contain the main analytical logic itself.
+
+This keeps the architecture separated into:
+
+**UI → API → preprocessing / model inference**
+
+and allows the backend to be tested independently.
+
+---
+
+## 6. Decision 5: Local execution and deployment approach
+
+The project does not currently require public cloud deployment because it is a research prototype without real production users.
+
+Three execution approaches were considered.
+
+| Criterion | Docker Compose | Python virtual environment + Makefile | Cloud platform |
 |---|---|---|---|
-| Development complexity | Medium. Needs Docker installed and a few config files | Low | Medium to high: accounts, configuration, costs |
-| Reproducibility | Good: same environment for everyone (my judgment) | Medium: depends on the local Python and system libraries (my judgment) | Good, but ties results to a provider |
-| Testing | Can run tests in a container | Easy | Harder to reproduce locally |
-| Documentation | One command to run, easy to explain | Short instructions | Provider specific |
-| Fit for an individual student | Good | Good | Weak: not needed for a prototype without real users |
+| Development complexity | Medium | Low | Medium to high |
+| Reproducibility | High because services and dependencies can be defined explicitly | Good when dependency versions are pinned | High, but environment becomes provider-dependent |
+| Testing | Tests can run inside containers | Straightforward local testing | Requires additional remote configuration |
+| Setup | Requires Docker | Requires Python and dependency installation | Requires account, deployment configuration and possibly cost management |
+| Demonstration | Convenient one-command startup can be provided | Simple for development | Accessible remotely |
+| Fit for the current project | High | High | Low to medium |
 
-Official documentation (not opened by me): https://docs.docker.com/compose/.
+### Selected approach
 
-**Selected: a pinned Python environment with a Makefile as the main way to run and test, and a Docker Compose file as the one-command option.** Reproducibility is one of my stated goals, and a container is the simplest way to show it. The virtual environment stays documented because Docker may not be available on every machine. I am not using a cloud service, because the prototype has no real users and no need to be online.
+The main development workflow will use:
 
-## 7. Summary of proposed choices
+**Pinned Python environment + Makefile**
 
-| Decision | Selected | Main reason |
+A **Docker Compose** configuration will also be provided as a reproducible one-command execution option.
+
+This provides two useful paths:
+
+1. simple local development through Python;
+2. reproducible demonstration through containers.
+
+A cloud deployment is not currently required because the diploma prototype is not intended for production use.
+
+---
+
+## 7. Summary of proposed technology choices
+
+| Decision | Proposed choice | Main reason |
 |---|---|---|
-| Backend and API | FastAPI | Typed validation, automatic API documentation and easy tests |
-| Data storage | SQLite (through an ORM) | Simple setup, easy tests, traceable predictions |
-| ML approach | Gradient-boosted trees, logistic regression baseline | Missing values, explainability, cheap and reproducible |
-| Dashboard | Streamlit as an API client | Fast to build and keeps the layers separate |
-| Packaging | Pinned environment with Makefile, plus Docker Compose | Reproducibility for one person |
+| Backend and API | FastAPI | Structured validation, automatic API documentation, Python ML integration, convenient testing |
+| Data storage | SQLite through an ORM | Simple setup, reproducibility, sufficient for a single-user prototype |
+| ML approach | Gradient-boosted trees + logistic regression baseline | Suitable for structured clinical data, explainability, reasonable complexity and reproducibility |
+| Dashboard | Streamlit as an API client | Fast development of a minimal analytical interface while preserving layer separation |
+| Execution / deployment | Pinned Python environment + Makefile, with Docker Compose | Simple development plus reproducible demonstration |
 
-## 8. Still to check
+---
 
-| Item | Status |
-|---|---|
-| Open the official documentation for every [MUST VERIFY] fact above | [MUST VERIFY] |
-| SQLAlchemy compatibility with SQLite for my schema | [MUST VERIFY] |
-| My comfort with JavaScript (affects the dashboard decision) | [REQUIRES USER INPUT] |
-| Whether the supervisor accepts these choices | [REQUIRES SUPERVISOR APPROVAL] |
+## 8. Open Decisions
+
+The technology stack is currently a proposal rather than a final architectural decision.
+
+The following points will be reviewed after the requirements are finalized and discussed with the supervisor:
+
+- whether the proposed stack provides sufficient engineering complexity for the diploma;
+- whether gradient-boosted trees are appropriate as the main model;
+- whether logistic regression is sufficient as the primary baseline;
+- whether an additional clinical baseline should be included;
+- whether SQLite is sufficient for the final prototype or PostgreSQL is more appropriate;
+- whether Streamlit provides enough UI functionality for the required prototype.
+
+Any decisions changed after supervisor feedback will be recorded in the project documentation and Git history.
