@@ -1,469 +1,223 @@
-# Project Proposal
+# Project Proposal and Scope
 
-## Project Title
+**Project title:** Development of a Machine Learning-Based System for Analyzing Patient Health Indicators  
+**Student:** Baku Aman  
+**Supervisor:** Altynbek Seitenov (Сейтенов Алтынбек Серикович)  
+**Format:** Individual diploma project  
+**Status:** Working proposal for supervisor review. The concrete sepsis direction described below is proposed, not yet treated as supervisor-approved.
 
-**Development of a Machine Learning-Based System for Analyzing Patient Health Indicators**
+## 1. Problem statement
 
-**Status:** DRAFT - requires supervisor approval.
+Hospitals collect repeated physiological and laboratory measurements for patients. Published research shows that machine-learning models can use such time-series data to estimate the risk of sepsis or clinical deterioration before the event is clinically recognized. The same literature also shows important limitations: results vary with the dataset and prediction setup, performance can fall at a new hospital, and a model with good retrospective discrimination can still create many false alerts or fail when integrated into real clinical workflow.
 
----
+The engineering problem addressed by this diploma is therefore not only model training. The project will design a reproducible decision-support prototype that ingests time-series patient measurements, applies time-valid preprocessing, produces a risk estimate, exposes the result through an API, and presents the result and measurement trends to a human reviewer.
 
-## Working Definition of Patient Health Indicators
+The prototype is for research and demonstration only. It will not diagnose, prescribe treatment, replace clinical judgement, connect to a live hospital system, or be presented as a clinically validated medical device.
 
-For this project, **patient health indicators** are provisionally defined as structured, de-identified measurements that describe a patient's physiological or clinical state.
+## 2. Target users
 
-Depending on the final project direction and selected dataset, these indicators may include:
+The working primary user is a healthcare professional who reviews patient measurements and needs to identify possible deterioration over time.
 
-- vital signs;
-- laboratory measurements;
-- demographic variables;
-- other structured clinical measurements available in the selected dataset.
+This user definition is still an assumption. It will be checked through the evidence-of-relevance discussions and reviewed with the supervisor before it is treated as final.
 
-The exact set of indicators has not yet been selected. It will depend on the final health problem, machine learning task, target variable, and dataset.
+## 3. Aim
 
-**Status:** DRAFT - requires dataset verification and supervisor approval.
+To design, implement, and evaluate a reproducible decision-support prototype that analyzes time-series patient measurements and estimates early sepsis risk using an open, de-identified clinical dataset.
 
----
+## 4. Objectives
 
-## DRAFT: Scope Options Under Evaluation
+1. Define a reproducible time-series prediction task on an openly available clinical dataset.
+2. Build a data-ingestion and validation pipeline for repeated patient measurements.
+3. Implement documented preprocessing and missing-data handling.
+4. Prevent temporal leakage by using only information available up to each prediction time.
+5. Train at least one machine-learning model for early sepsis-risk estimation.
+6. Implement at least one simple and reproducible baseline under the same evaluation protocol.
+7. Expose model inference through a backend API.
+8. Build a minimal dashboard that shows measurement trends and the current risk result.
+9. Evaluate the model using several discrimination and alert-related metrics.
+10. Add automated tests for critical software behaviour and document how to reproduce the system and experiments.
 
-The current project topic is broad and does not yet define a specific health problem, target variable, dataset, or machine learning task.
+## 5. Proposed project direction
 
-Before finalizing the project scope, several possible directions are being considered. The final direction should be selected based on:
+The proposed direction is **time-series monitoring and early warning, with early sepsis prediction as the concrete machine-learning task**.
 
-- availability and accessibility of legitimate data;
-- support from scientific literature;
-- clearly defined machine learning task and target variable;
-- software engineering complexity;
-- feasibility for one student;
-- ability to evaluate the result objectively;
-- privacy and medical-safety considerations;
-- supervisor feedback.
+This direction is preferred because it provides:
 
-No option below is currently considered the final project direction.
+- a clearly defined temporal prediction problem;
+- an open candidate dataset;
+- objective evaluation;
+- meaningful Software Engineering work beyond a notebook, including ingestion, validation, preprocessing, inference, API design, alert logic, visualization, experiment tracking, and testing.
 
----
+This is a project-design choice, not a claim that sepsis prediction is medically superior to other possible topics. A structured-indicator risk model using a public dataset remains a lower-complexity fallback if the supervisor asks to narrow the scope differently.
 
-## Option A — Health Risk Assessment from Structured Patient Indicators
+## 6. Candidate data source
 
-### Data Type
+The candidate dataset is **PhysioNet / Computing in Cardiology Challenge 2019: Early Prediction of Sepsis from Clinical Data**.
 
-Structured health indicators collected at a particular examination or assessment point, such as:
+The public training data contain hourly ICU records with 40 variables:
 
-- examination measurements;
-- laboratory measurements;
-- demographic variables;
-- other structured health information.
+- 8 vital-sign variables;
+- 26 laboratory variables;
+- 6 demographic or administrative variables;
+- plus `SepsisLabel`.
 
-### Possible ML Task
+Missing measurements are represented in the data, and the public dataset is de-identified.
 
-Classification or risk estimation for a specific health condition or health-related outcome.
+Dataset DOI: `10.13026/v64v-d857`
 
-The exact condition and target variable have **not yet been selected**.
+Only public, de-identified data will be used. Patient datasets will not be committed to the Git repository.
 
-### Possible Data Source
+## 7. Machine-learning task
 
-One candidate source is the **National Health and Nutrition Examination Survey (NHANES)** maintained by the U.S. Centers for Disease Control and Prevention.
+The prototype will estimate sepsis risk from measurements available up to a given patient-hour.
 
-CDC provides NHANES datasets and accompanying questionnaire, examination, laboratory, and documentation resources for research and analysis.
+The experimental protocol will follow these rules:
 
-Official source:
+- split patients rather than individual rows between training and evaluation data;
+- learn preprocessing only from the training portion;
+- never use future patient measurements for an earlier prediction;
+- document missing-data handling;
+- evaluate the main model and baselines under the same temporal setup;
+- record the exact model, preprocessing, threshold, and evaluation configuration.
 
-https://www.cdc.gov/nchs/nhanes/
+The exact prediction horizon and the final handling of the Challenge `SepsisLabel` will be fixed before implementation and reviewed with the supervisor. The original Challenge labels begin six hours before the defined onset; the diploma protocol must therefore state clearly how those labels are interpreted.
 
-The suitability of particular NHANES variables for the final ML task still needs to be established.
+The original hidden Challenge test set is not publicly available. The diploma will use a reproducible evaluation on the public data and will explicitly state that this does not reproduce the original hidden-hospital test.
 
-### Potential Advantages
+## 8. Baselines and model comparison
 
-- Public-use health data are available for investigation.
-- A clearly measurable classification or risk-estimation problem may be possible.
-- Tabular data would generally make preprocessing and model evaluation more manageable for an individual diploma project.
-- The ML model could be integrated into a larger software system rather than developed only as a standalone notebook.
+A simple **logistic-regression baseline** using the same evaluation split is proposed as the minimum reproducible baseline.
 
-### Risks / Limitations
+It is intentionally treated as a floor rather than assumed to be a strong clinical comparator. Literature reviewed for the project shows that logistic regression can underperform rule-based scores in some settings, while stronger ML models may outperform them.
 
-- The specific health condition has not yet been selected.
-- The target variable has not yet been defined.
-- The relationship between input variables and target must be carefully examined to prevent data leakage.
-- A simple tabular classifier alone may provide insufficient Software Engineering complexity, so the surrounding system design would need to provide meaningful engineering work.
-- Suitability of a specific NHANES dataset for this diploma has not yet been verified.
+The main model will be selected after the technology comparison. Reasonable candidates include:
 
-**Status:** [DRAFT] [MUST VERIFY]
+- gradient-boosted trees;
+- a time-aware neural model.
 
----
+A NEWS/NEWS2-style score will only be used if it can be reproduced fairly from the selected data. The Challenge dataset directly contains respiration rate, oxygen saturation, systolic blood pressure, heart rate, and temperature, but it does not directly contain all information required for full NEWS2. Therefore, the project will not label an incomplete approximation as full NEWS2.
 
-## Option B - Time-Series Monitoring and Early Warning
+## 9. Planned system workflow
 
-### Data Type
-
-Repeated patient measurements collected over time, including physiological measurements, laboratory values, and demographic information.
-
-### Possible ML Task
-
-Early prediction of patient deterioration or another clinically relevant event using time-dependent patient data.
-
-A concrete candidate problem is **early prediction of sepsis**, but this is not yet the final project decision.
-
-### Candidate Data Source
-
-A candidate is the **PhysioNet/Computing in Cardiology Challenge 2019: Early Prediction of Sepsis from Clinical Data**.
-
-The official PhysioNet dataset contains measurements recorded over time and provides 40 time-dependent variables together with `SepsisLabel`.
-
-The variables include vital signs, laboratory values, and demographic/administrative information. Missing measurements are explicitly represented in the files.
-
-Training data are publicly downloadable from PhysioNet.
-
-Official source:
-
-https://physionet.org/content/challenge-2019/1.0.0/
-
-The Challenge task is specifically designed around early prediction of sepsis, and its official evaluation rewards sufficiently early predictions while penalizing late, missed, and incorrect predictions.
-
-### Potential Advantages
-
-- The ML task is already clearly connected to temporal patient measurements.
-- Time-dependent data may provide greater engineering depth than a single static patient record.
-- The system could include:
-  - temporal data ingestion;
-  - input validation;
-  - missing-data processing;
-  - ML inference;
-  - risk monitoring;
-  - alert logic;
-  - visualization of indicator trends;
-  - presentation of results to a human reviewer.
-- There is a clear separation between the ML component and the surrounding software system.
-- The candidate training data are openly accessible.
-
-### Risks / Limitations
-
-- Time-series preprocessing is more complex than ordinary tabular classification.
-- The dataset contains missing measurements that must be handled correctly.
-- The final system would become focused on a specific clinical problem rather than general health analysis.
-- The evaluation methodology must be selected carefully.
-- The usefulness and interpretation of the system must not be presented as clinically validated without evidence.
-- The final target, prediction horizon, model family, and software workflow still require literature review and supervisor approval.
-- The official Challenge test set is hidden and cannot be used for independent evaluation. The diploma evaluation would therefore require a reproducible split or validation strategy using the publicly available data.
-- Publicly released Challenge data come from two hospital systems, while data from another hospital system were used as part of the hidden evaluation data.
-- `SepsisLabel` is defined so that positive labels begin six hours before the defined sepsis onset time.
-- Any monitoring model must respect temporal causality: predictions must use only current and past information, not future patient measurements.
-- Full NEWS2 cannot be reproduced directly because consciousness/new confusion and a direct supplemental-oxygen indicator are absent from the available variables.
-
-### Possible Baseline
-
-The official Challenge 2019 data dictionary was checked on 10 October 2026.
-
-Five physiological inputs required by NEWS2 are directly available in the dataset:
-
-- `Resp` — respiration rate;
-- `O2Sat` — oxygen saturation;
-- `SBP` — systolic blood pressure;
-- `HR` — heart rate / pulse;
-- `Temp` — temperature.
-
-However, the dataset does not contain a variable representing consciousness or new confusion, and it does not contain a direct supplemental-oxygen indicator.
-
-Although `FiO2` is available, it should not automatically be treated as equivalent to the NEWS2 supplemental-oxygen indicator without scientific justification.
-
-Therefore, **full NEWS2 cannot be reproduced directly using the Challenge 2019 dataset**.
-
-Possible baseline approaches are:
-
-1. A simple statistical baseline such as logistic regression using the same available input data.
-2. A clearly documented partial NEWS2-style score using only compatible variables, but only if such an adaptation can be scientifically justified.
-3. Another established and reproducible early-warning baseline identified through the literature review.
-
-The final baseline must be selected after literature review and discussion with the supervisor.
-
-**Status:** [DRAFT] [REQUIRES SUPERVISOR APPROVAL]
-
----
-
-## Option C - ICU Analysis Using MIMIC-IV
-
-### Data Type
-
-Detailed de-identified clinical data from hospital and intensive-care settings.
-
-### Possible ML Task
-
-Potential tasks could include:
-
-- patient-risk prediction;
-- deterioration analysis;
-- another outcome-prediction task supported by the selected MIMIC-IV data.
-
-No particular ML target has been selected.
-
-### Candidate Data Source
-
-**MIMIC-IV**, hosted through PhysioNet.
-
-Unlike the PhysioNet Challenge 2019 training dataset, MIMIC-IV is a **restricted-access resource**.
-
-Official PhysioNet requirements state that a user must:
-
-1. become a credentialed PhysioNet user;
-2. complete the required CITI “Data or Specimens Only Research” training;
-3. sign the project's Data Use Agreement;
-4. obtain access before downloading the restricted files.
-
-Official source:
-
-https://physionet.org/content/mimiciv/
-
-### Potential Advantages
-
-- Rich clinical data are available once access requirements are satisfied.
-- The dataset may support technically and scientifically substantial ML problems.
-- It could support a deeper patient-monitoring or prediction system.
-
-### Risks / Limitations
-
-- Access is not immediate.
-- Credentialing, required training, and the Data Use Agreement introduce additional preparation.
-- Restricted data would require stricter handling than an openly downloadable dataset.
-- Access requirements could delay development.
-- For the current diploma schedule, this creates additional project risk without yet providing a clearly demonstrated advantage over an openly accessible alternative.
-
-For this reason, MIMIC-IV is currently being treated as an **alternative candidate rather than the preferred dataset**.
-
-**Status:** [DRAFT] [MUST VERIFY] — not selected.
-
----
-
-## Preliminary Comparison
-
-The following table is a **project-planning comparison**, not an experimentally proven ranking.
-
-Terms such as “lower”, “moderate”, and “higher” represent preliminary judgments about implementation effort and schedule risk and should not be interpreted as scientific findings.
-
-| Criterion | Option A — Structured Indicators | Option B — Time-Series / Early Warning | Option C — MIMIC-IV |
-|---|---|---|---|
-| Candidate data access | Public-use NHANES data are available; final dataset not selected | PhysioNet Challenge 2019 training data are publicly downloadable | Credentialed PhysioNet access required |
-| Possible ML task | Classification / risk estimation; target not selected | Defined candidate task: early-event prediction | Task still to be selected |
-| Temporal information | Not necessarily required | Central to the candidate approach | Available depending on selected data |
-| Data-processing difficulty | Preliminary judgment: relatively manageable | Preliminary judgment: greater because of temporal and missing data | Preliminary judgment: potentially high |
-| Potential software-system depth | Depends strongly on system design | Potentially substantial: temporal processing, inference, alerts and visualization | Potentially substantial |
-| Schedule risk | Preliminary judgment: relatively lower | Preliminary judgment: moderate | Preliminary judgment: higher because access is restricted |
-| Clear candidate dataset already identified | Partially — NHANES still requires target selection | Yes — PhysioNet Challenge 2019 | Yes, but restricted |
-| Final supervisor approval required | Yes | Yes | Yes |
-
-**Important:** this table is not evidence that one approach is clinically or scientifically superior to another.
-
----
-
-## Current Preliminary Preference
-
-At this stage, **Option B — Time-Series Monitoring and Early Warning** is the preliminary preferred direction.
-
-This preference is based primarily on **project-design and Software Engineering considerations**, not on evidence that Option B is medically superior.
-
-The candidate PhysioNet Challenge 2019 dataset already provides:
-
-- temporal patient measurements;
-- a defined early-prediction problem;
-- a labelled outcome;
-- openly downloadable training data;
-- an official evaluation framework.
-
-Official source:
-
-https://physionet.org/content/challenge-2019/1.0.0/
-
-This could support a software system consisting of:
-
-1. ingestion of patient measurements over time;
-2. input validation;
-3. preprocessing and missing-value handling;
-4. ML inference;
-5. calculation of an early-warning or risk result;
-6. alert logic;
-7. visualization of measurements and results;
-8. presentation of relevant information to a human reviewer.
-
-This may provide greater Software Engineering depth than implementing only a static ML classifier.
-
-However, this preference remains **preliminary** because:
-
-- no user interviews or discussions have yet validated the problem;
-- the literature review has not yet established whether this is the most appropriate research direction;
-- baseline compatibility still needs to be verified;
-- feasibility for one student still needs to be assessed;
-- the supervisor has not yet approved the direction.
-
-Therefore, Option B must **not** yet be described as the final project scope.
-
-**Status:** DRAFT - requires supervisor approval.
-
----
-
-## Preliminary Target User
-
-A possible primary user is:
-
-**Clinical staff or another healthcare professional responsible for reviewing patient health indicators.**
-
-The proposed system would support the user by presenting analytical information derived from patient measurements.
-
-The system would be treated as an **analytical or decision-support prototype**, not as an autonomous medical diagnostic system.
-
-No real-user evidence has yet been collected to confirm this target-user definition.
-
-**Status:** [DRAFT] [REQUIRES USER EVIDENCE] [REQUIRES SUPERVISOR APPROVAL]
-
----
-
-## Preliminary System Output
-
-Depending on the final project direction, the system may provide:
-
-- a risk estimate or warning level;
-- visualization of patient indicators;
-- visualization of indicator changes over time;
-- identification or explanation of factors contributing to an ML result, where technically appropriate;
-- an analytical result for review by a human user.
-
-The system will **not** be presented as:
-
-- an autonomous diagnostic tool;
-- a treatment-recommendation system;
-- a clinically validated medical device.
-
-**Status:** [DRAFT]
-
----
-
-## Preliminary Scope Boundary
-
-### In Scope
-
-Potential scope currently includes:
-
-- analysis of de-identified structured patient health data;
-- use of an openly accessible or properly authorized dataset;
-- preprocessing and validation of health-indicator data;
-- machine-learning-based risk estimation or early warning;
-- integration of an ML model into a software system;
-- backend/API functionality;
-- storage or management of application data where required;
-- minimal web interface or dashboard;
-- visualization of analytical results;
-- evaluation of the ML approach using defined metrics;
-- comparison against an appropriate and reproducible baseline;
-- software testing.
-
-### Out of Scope
-
-The following are currently outside the intended diploma scope:
+1. Load de-identified time-series data.
+2. Validate the input schema and values.
+3. Apply documented missing-data and preprocessing rules.
+4. Construct model inputs without future-information leakage.
+5. Run baseline and main-model inference.
+6. Convert the model output into a clearly defined risk state.
+7. Serve the result through a backend API.
+8. Display the risk result together with measurement trends in the dashboard.
+9. Record experiment and evaluation outputs for reproducibility.
+
+## 10. Scope
+
+### In scope
+
+- ingestion and validation of the selected public dataset;
+- temporal preprocessing and missing-data handling;
+- model training and reproducible evaluation;
+- baseline comparison;
+- backend/API inference;
+- minimal application/model metadata storage where needed;
+- minimal dashboard;
+- visualization of time-series indicators and analytical results;
+- automated tests for critical components;
+- experiment and evaluation documentation.
+
+### Out of scope
 
 - autonomous medical diagnosis;
-- prescribing or recommending treatment;
-- replacing clinical judgement;
-- production deployment in a hospital;
-- use of identifiable real patient data without appropriate authorization;
-- clinical validation as a medical device;
-- integration with real hospital information systems;
-- claims that the resulting model is safe for actual clinical use.
+- treatment or medication recommendations;
+- replacement of clinical judgement;
+- production hospital deployment;
+- integration with a real hospital information system;
+- identifiable patient data;
+- intervention on real patients;
+- medical-device certification or claims of clinical validation;
+- claims of generalization to hospitals or populations not represented in the evaluation.
 
-**Status:** DRAFT - requires supervisor approval.
+## 11. Expected outcomes
 
----
+1. A documented preprocessing pipeline for clinical time-series data.
+2. A trained early-sepsis prediction model.
+3. At least one reproducible baseline.
+4. A backend API for inference.
+5. A minimal dashboard for trends and risk results.
+6. Automated tests for critical behaviour.
+7. A reproducible evaluation report.
+8. A documented discussion of dataset shift, missingness, temporal validity, false alerts, and lack of prospective clinical validation.
 
-## Open Decisions for Supervisor
+## 12. Preliminary evaluation plan
 
-The following questions should be discussed with the supervisor before the scope is finalized:
+The final evaluation plan will use multiple metrics because the task is imbalanced and time-dependent:
 
-1. Should the project focus on general health-risk analysis or one specific clinical problem?
-2. Is **time-series early warning / early sepsis prediction** an acceptable interpretation of the approved diploma topic?
-3. Is it acceptable to base the project entirely on public and de-identified data?
-4. Is the PhysioNet/Computing in Cardiology Challenge 2019 dataset an appropriate candidate for the project?
-5. Who should be defined as the primary user of the system?
-6. Is the proposed combination of data processing, ML, backend/API, monitoring logic, evaluation, and dashboard sufficient Software Engineering complexity?
-7. Should Option A remain the safer alternative if Option B is considered too complex or too medically specific?
-8. What level of medical-domain specificity is expected for the diploma project?
-9. Since full NEWS2 cannot be reproduced with the Challenge 2019 variables, what baseline would you consider appropriate: a simple statistical model such as logistic regression, a scientifically justified partial NEWS2-style score, or another established early-warning method?
-10. Should the final project remain a decision-support prototype rather than make any diagnostic claim?
+- AUROC;
+- AUPRC;
+- sensitivity / recall;
+- specificity;
+- precision / positive predictive value;
+- F1 where useful;
+- lead time before onset where supported by the final setup;
+- false-alert burden or alert frequency where supported by the final setup.
 
----
+All compared models will use the same split, preprocessing rules, and temporal constraints.
 
-## Verified Sources Used in This Draft
+## 13. Engineering complexity
 
-The following sources are currently used only to establish factual information about candidate datasets and the NEWS2 scoring system.
+The engineering work includes:
 
-They do **not** yet constitute the full literature review.
+- time-series data ingestion and validation;
+- missing-data processing;
+- leakage-safe temporal feature construction;
+- model training and versioned inference;
+- backend/API development;
+- risk and alert logic;
+- dashboard integration;
+- experiment/evaluation pipeline;
+- automated testing;
+- traceability through Git and YouTrack.
 
-### 1. PhysioNet / Computing in Cardiology Challenge 2019
+The supervisor will review whether the proposed scope is sufficient and whether it should be narrowed or adjusted.
 
-**Dataset citation:**  
-Reyna M, Josef C, Jeter R, Shashikumar S, Moody B, Westover MB, Sharma A, Nemati S, Clifford GD. *Early Prediction of Sepsis from Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019 (version 1.0.0).* PhysioNet, 2019.
+## 14. Main risks
 
-**Dataset DOI:**  
-10.13026/v64v-d857
+| Risk | Mitigation |
+|---|---|
+| Missing and irregular measurements | Define explicit preprocessing rules and test them |
+| Temporal leakage | Use only current and past measurements for each prediction |
+| Class imbalance | Report AUPRC and class-sensitive metrics alongside AUROC |
+| Poor generalization | Avoid clinical-validity claims and discuss dataset shift |
+| Excessive false alerts | Measure PPV and alert burden where possible |
+| Scope becomes too large | Keep one main prediction target and a minimal interface |
+| Output is mistaken for medical advice | Label the prototype clearly as research decision support |
+| Results cannot be reproduced | Version code, model settings, preprocessing, and evaluation configuration |
 
-**License:**  
-Creative Commons Attribution 4.0 International (CC BY 4.0)
+## 15. Link to evidence and literature
 
-**Access:**  
-Anyone may access the files subject to the license terms.
+The literature review contains 12 meaningfully used peer-reviewed publications covering:
 
-**Official source:**  
-https://physionet.org/content/challenge-2019/1.0.0/
+- early sepsis prediction;
+- clinical-deterioration prediction;
+- ML versus clinical baselines;
+- external validation;
+- alert burden;
+- deployment and human workflow.
 
-**Accessed:**  
-10 October 2026
+User evidence is documented separately. Until real discussions are completed, the primary-user and workflow assumptions remain assumptions rather than findings.
 
-**Associated peer-reviewed publication:**  
-Reyna MA, Josef CS, Jeter R, Shashikumar SP, Westover MB, Nemati S, Clifford GD, Sharma A. *Early Prediction of Sepsis From Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019.* Critical Care Medicine. 2020;48(2):210–217.
+## 16. Open decisions for supervisor review
 
-**DOI:**  
-10.1097/CCM.0000000000004145
+The following decisions still require supervisor discussion rather than being presented as settled facts:
 
-**Open full text:**  
-Available through PubMed Central (PMCID: PMC6964870).
-**Title:** Early Prediction of Sepsis from Clinical Data — The PhysioNet/Computing in Cardiology Challenge 2019
+- whether early sepsis prediction is an acceptable concrete interpretation of the approved diploma topic;
+- final primary user;
+- exact prediction horizon and label interpretation;
+- final baseline strategy;
+- whether to include the official Challenge utility score;
+- whether the proposed engineering scope is appropriate for the diploma.
 
-**Organization:** PhysioNet / Computing in Cardiology
+## 17. Key supporting references
 
-**Purpose in this draft:**  
-Used to verify the availability of the candidate dataset, temporal patient measurements, `SepsisLabel`, missing measurements, and the early-prediction task.
-
-**Official source:**  
-https://physionet.org/content/challenge-2019/1.0.0/
-
----
-
-### 2. MIMIC-IV
-
-**Organization:** PhysioNet / MIT Laboratory for Computational Physiology
-
-**Purpose in this draft:**  
-Used to verify that MIMIC-IV is a restricted-access dataset and requires credentialing, required training, and acceptance of a Data Use Agreement.
-
-**Official source:**  
-https://physionet.org/content/mimiciv/
-
----
-
-### 3. National Early Warning Score 2 (NEWS2)
-
-**Organization:** Royal College of Physicians
-
-**Purpose in this draft:**  
-Used to verify the physiological parameters used by NEWS2 and its consideration of supplemental oxygen.
-
-**Official source:**  
-https://www.rcp.ac.uk/resources/national-early-warning-score-news-2/
-
----
-
-### 4. National Health and Nutrition Examination Survey (NHANES)
-
-**Organization:** U.S. Centers for Disease Control and Prevention / National Center for Health Statistics
-
-**Purpose in this draft:**  
-Used to verify the availability of public-use NHANES health datasets and accompanying documentation.
-
-**Official source:**  
-https://www.cdc.gov/nchs/nhanes/
+1. Reyna MA, Josef CS, Jeter R, et al. *Early Prediction of Sepsis From Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019.* Critical Care Medicine. 2020;48(2):210–217. DOI: 10.1097/CCM.0000000000004145.
+2. PhysioNet. *Early Prediction of Sepsis from Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019 (version 1.0.0).* DOI: 10.13026/v64v-d857.
+3. The remaining scientific sources are documented in `literature-matrix.md`.
