@@ -218,3 +218,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------
+# Project-specific: patient data and generated artifacts
+# Patient datasets must never be committed (see data/README.md).
+# ---------------------------------------------------------------
+data/raw/
+data/processed/
+*.psv
+*.zip
+models/*.joblib
+models/*.pkl
+mlruns/
+evaluation/results/
+report/*.pdf
+.DS_Store
