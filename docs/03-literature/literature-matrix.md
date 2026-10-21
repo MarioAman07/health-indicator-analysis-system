@@ -2,8 +2,8 @@
 
 **Project:** Development of a Machine Learning-Based System for Analyzing Patient Health Indicators  
 **Current proposed direction:** time-series monitoring / early warning with early sepsis prediction as the concrete candidate task  
-**Status:** Complete against the current 24 October literature-count requirement and ready for supervisor review.  
-**Last updated:** 13 Oct 2026
+**Status:** Complete against the 24 October literature-count requirement; revised on 21 Oct 2026 (DIP-17): search log restored, retrieval queries added, limitation → project response table added.  
+**Last updated:** 21 Oct 2026
 
 ## 1. Research question
 
@@ -24,13 +24,51 @@ A source was retained when it contributed meaningfully to at least one of the fo
 
 The core body is recent: 11 of the 12 publications are from 2021–2024. Reyna et al. (2020) is retained as a foundational source because it defines the PhysioNet/Computing in Cardiology Challenge 2019 task and dataset that are central to the proposed project.
 
-## 3. Verification process
+## 3. Search and verification process
 
-Sources #1–#6 were already recorded as full-text reviewed in the previous matrix.
+Sources #1–#6 were found on 10 Oct 2026 with the searches in §3.1, and I reviewed their full texts.
 
-For sources #7–#12, the complete published article texts supplied for this project were reviewed on 13 Oct 2026. The verification covered bibliographic metadata, study design, data/cohorts, model or intervention, baselines, evaluation measures, main results, limitations, and deployment details where present. No newspaper or press-summary numbers are used in the final analysis matrix.
+Sources #7–#12 were added during the literature expansion, and I reviewed their full published texts on 13 Oct 2026. The verification covered bibliographic metadata, study design, data/cohorts, model or intervention, baselines, evaluation measures, main results, limitations, and deployment details where present. No newspaper or press-summary numbers are used in the analysis matrix.
 
-The exact original search queries that led to #7–#12 were not recorded at the time they were added, so this document does not invent them. They are documented instead as sources added during the literature-expansion stage and verified from their published full texts.
+The original queries that led to #7–#12 were not recorded when the sources were added. To keep retrieval reproducible, §3.2 lists title-based queries, re-run on 21 Oct 2026, that find each source. They document how each source can be found again, not how it was first discovered.
+
+### 3.1 Search log — sources #1–#6 (10 Oct 2026)
+
+| # | Search channel | Query | Outcome |
+|---|---|---|---|
+| 1 | Web search → PubMed / PMC | `machine learning early prediction sepsis systematic review PMC open access` | Moor et al. (2021) identified and selected |
+| 2 | Web search → PubMed / PMC | `External Validation Epic Sepsis Model JAMA Internal Medicine Wong` | Wong et al. (2021) identified and selected |
+| 3 | Web search → PubMed / PMC | `machine learning versus National Early Warning Score NEWS clinical deterioration prediction AUROC open access` | Lashen et al. (2023) and Edelson et al. (2024) identified and selected |
+| 4 | Web search → PubMed / PhysioNet | `Reyna PhysioNet Computing in Cardiology Challenge 2019 early prediction sepsis` | Reyna et al. (2020) identified; full text and official dataset documentation reviewed |
+| 5 | Web search → PubMed / PMC | `sepsis machine learning systematic review meta-analysis traditional scoring systems` | Yadgarov et al. (2024) identified and selected |
+
+### 3.2 Retrieval queries — sources #7–#12 (re-run 21 Oct 2026)
+
+| # | Query | Result |
+|---|---|---|
+| 7 | `COMPOSER sepsis prediction algorithm learns to say "I don't know" npj Digital Medicine 2021` | Found: PMC8429719 |
+| 8 | `predicting sepsis using deep learning across international sites retrospective development validation eClinicalMedicine 2023` | Found: PMC10425671 |
+| 9 | `impact of a deep learning sepsis prediction model on quality of care and survival npj Digital Medicine 2024` | Found: PMC10805720 (and the author correction, PMC11169238) |
+| 10 | `systematic review longitudinal analysis implementing artificial intelligence predict clinical deterioration adult hospitals JAMIA 2024` | Found: PMC10797271 |
+| 11 | `clinical evaluation machine learning-based early warning system patient deterioration CMAJ 2024 CHARTwatch` | Found: CMAJ 196(30):E1027 |
+| 12 | `effectiveness of an artificial intelligence-enabled intervention for detecting clinical deterioration JAMA Internal Medicine 2024` | Found: PMC10964159 |
+
+### 3.3 Seen but not used
+
+| Item | Reason not used |
+|---|---|
+| medRxiv version related to Moor et al. | Published peer-reviewed version was available and used instead |
+| Research Square work using PhysioNet Challenge 2019 data | Preprint |
+| arXiv work on predictive-model voting for Challenge 2019 | Peer-reviewed publication status was not verified |
+| Zubair and Din, *Revolutionizing sepsis diagnosis using machine learning and deep learning models: a systematic literature review* | Full text was not verified during the search |
+| *Artificial Intelligence-Based Predictive Modeling for Early Detection of Sepsis in Hospitalized Patients: A Systematic Review and Meta-Analysis* | Full text was not verified during the search |
+| Watson et al., study comparing ML with NEWS | Seen as a candidate but not reviewed in full text |
+| Scientific Reports study on interpretable ML for acute clinical deterioration | Seen as a candidate but not reviewed in full text |
+| Steitz et al., ML model for imminent clinical deterioration | Seen as a candidate but not reviewed in full text |
+| *Factors underpinning the performance of implemented artificial intelligence-based patient deterioration prediction systems* (PMC11833469) | Found on 21 Oct 2026; candidate for the next revision; full text not yet reviewed |
+| COMPOSER-LLM (follow-up work on COMPOSER), seen as a publisher blog post | Peer-reviewed publication not yet checked; candidate for the next revision |
+
+**Background sources checked separately:** official PhysioNet Challenge 2019 documentation and Royal College of Physicians NEWS2 information. These are supporting resources and are not counted among the scientific publications.
 
 ## 4. Bibliographic table
 
@@ -155,10 +193,28 @@ The previously open items were resolved from the supplied published full texts:
 |---|---|
 | At least 12 meaningfully used sources | **12 / 12** |
 | At least 8 scientific publications | **12 peer-reviewed journal publications** |
-| Core body mainly within last five years | **11 of 12 are 2021–2024; Reyna 2020 retained as foundational** |
+| Core body mainly within last five years | **8 of 12 are from 2023–2024 and 3 from 2021 (at the edge of the five-year window in Oct 2026); Reyna 2020 retained as foundational. Newer sources are planned (§12).** |
 | Critical review | **Included** |
 | Structured analysis table | **Included** |
 | Existing approaches, findings, differences and limitations identified | **Included** |
 | Project implications grounded in literature | **Included** |
 
 This completes the literature component for the current 24 October package, while the supervisor may still request revisions.
+
+## 11. Limitations in the literature and how the project responds
+
+| Limitation found in the literature | Sources | How the project responds | Where |
+|---|---|---|---|
+| Different sepsis definitions, horizons and setups make results incomparable | #1, #4 | One documented label and horizon (`SepsisLabel`, 6 h before Sepsis-3 onset) used for every model | ML methodology §3 |
+| Performance drops at a new hospital | #2, #6, #8 | External test on set B (a different hospital system), never used for training or tuning | ML methodology §4 |
+| AUROC alone hides poor performance on rare events | #1, #2 | AUPRC, PPV at a fixed sensitivity, calibration and patient-level metrics | ML methodology §9 |
+| High alert burden and alarm fatigue | #6, #7, #10 | Alerts per patient-day reported; threshold chosen on validation data; suppression window | FR-07, ML methodology §8 |
+| Complex ML does not automatically beat simple scores | #3, #4, #5 | Two baselines (partial SIRS, logistic regression) and a paired bootstrap comparison | ML methodology §7, §9 |
+| Missing and irregular measurements | #1, #7 | Missingness features; "insufficient data" state instead of a confident risk | ML methodology §6, FR-11 |
+| Proprietary models cannot be inspected | #6; system comparison | Open code, model card, per-prediction explanations | FR-10, NFR-08 |
+| Outcome benefit depends on the whole workflow, not on the model | #9, #10, #11, #12 | No clinical-benefit claims; workflow elements (alerts, explanations, data-quality states) designed and checked with users | Proposal §7, verification plan §6 |
+| Retrospective evidence dominates | #4, #10 | Stated as a limitation; evaluation is retrospective only | ML methodology §11 |
+
+## 12. Planned update
+
+Before pre-defense 2 the review will be extended with peer-reviewed sources from 2025–2026, starting with the candidates in §3.3, and with studies that report methods on the PhysioNet/CinC Challenge 2019 data.
