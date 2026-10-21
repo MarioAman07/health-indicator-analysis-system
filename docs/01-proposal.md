@@ -1,223 +1,141 @@
 # Project Proposal and Scope
 
 **Project title:** Development of a Machine Learning-Based System for Analyzing Patient Health Indicators  
-**Student:** Baku Aman  
+**Concrete focus:** early sepsis-risk prediction from hourly ICU measurements ([ADR-001](decisions/ADR-001-scope.md), [research justification](01-research-justification.md))  
+**Student:** Aman Baku (Баку Аман Сағынғалиұлы), SE-2422  
 **Supervisor:** Altynbek Seitenov (Сейтенов Алтынбек Серикович)  
-**Format:** Individual diploma project  
-**Status:** Working proposal for supervisor review. The concrete sepsis direction described below is proposed, not yet treated as supervisor-approved.
+**Format:** individual diploma project  
+**Status:** revised on 21 Oct 2026 after supervisor feedback of 19 Oct (feedback log FB-03, FB-04). On 21 Oct the supervisor asked for a research justification of the sepsis focus (FB-12); it is in the [research justification](01-research-justification.md), and confirmation is expected at the meeting on 23 Oct (Q-01).
 
 ## 1. Problem statement
 
-Hospitals collect repeated physiological and laboratory measurements for patients. Published research shows that machine-learning models can use such time-series data to estimate the risk of sepsis or clinical deterioration before the event is clinically recognized. The same literature also shows important limitations: results vary with the dataset and prediction setup, performance can fall at a new hospital, and a model with good retrospective discrimination can still create many false alerts or fail when integrated into real clinical workflow.
+ICU patients are monitored through dozens of vital signs and laboratory values, recorded at different times and often missing. Sepsis can develop over a few hours, and recognising it early matters, but early signs are easy to miss in this stream of partial data. Machine-learning models that predict sepsis from such data have been published. However, their results are hard to compare, often drop at a new hospital, and can produce many false alerts (#2, #6, #8). The tools deployed in hospitals are mostly proprietary, and publications describe the surrounding software only briefly.
 
-The engineering problem addressed by this diploma is therefore not only model training. The project will design a reproducible decision-support prototype that ingests time-series patient measurements, applies time-valid preprocessing, produces a risk estimate, exposes the result through an API, and presents the result and measurement trends to a human reviewer.
-
-The prototype is for research and demonstration only. It will not diagnose, prescribe treatment, replace clinical judgement, connect to a live hospital system, or be presented as a clinically validated medical device.
+The project therefore addresses an engineering problem: building an open, tested system that turns ICU time-series data into a transparent early-warning result, evaluates it honestly against simple baselines and on a second hospital system, and shows the user why a warning appears.
 
 ## 2. Target users
 
-The working primary user is a healthcare professional who reviews patient measurements and needs to identify possible deterioration over time.
+| User | Who | What they need from the system | Status |
+|---|---|---|---|
+| **Primary** | ICU nurse or physician who monitors several patients during a shift | See which patients need attention first, how their measurements changed, and why the risk is high, without being flooded by alerts | Supported by the first user evidence (AS-01, EV-01; 2 respondents); checking continues (DIP-4) |
+| **Secondary** | Clinical-informatics researcher or ML engineer evaluating early-warning models | A reproducible pipeline, fair baselines, honest metrics, and an external test on a different hospital system | Based on literature (#1, #2, #4) |
 
-This user definition is still an assumption. It will be checked through the evidence-of-relevance discussions and reviewed with the supervisor before it is treated as final.
+Patients, hospital managers and IT administrators are not users of this prototype.
 
 ## 3. Aim
 
-To design, implement, and evaluate a reproducible decision-support prototype that analyzes time-series patient measurements and estimates early sepsis risk using an open, de-identified clinical dataset.
+To design, implement and evaluate a reproducible decision-support prototype that analyses time-series patient measurements and estimates early sepsis risk, using an open, de-identified clinical dataset.
 
 ## 4. Objectives
 
-1. Define a reproducible time-series prediction task on an openly available clinical dataset.
-2. Build a data-ingestion and validation pipeline for repeated patient measurements.
-3. Implement documented preprocessing and missing-data handling.
-4. Prevent temporal leakage by using only information available up to each prediction time.
-5. Train at least one machine-learning model for early sepsis-risk estimation.
-6. Implement at least one simple and reproducible baseline under the same evaluation protocol.
-7. Expose model inference through a backend API.
-8. Build a minimal dashboard that shows measurement trends and the current risk result.
-9. Evaluate the model using several discrimination and alert-related metrics.
-10. Add automated tests for critical software behaviour and document how to reproduce the system and experiments.
+1. Define a reproducible early-prediction task on the PhysioNet/CinC Challenge 2019 public data.
+2. Build an ingestion and validation pipeline for hourly patient measurements.
+3. Implement documented preprocessing and missing-data handling that never uses future values.
+4. Train a gradient-boosted model and compare it with two baselines (partial SIRS rule, logistic regression) under one protocol.
+5. Evaluate internally and on a second hospital system with discrimination, calibration and alert-related metrics.
+6. Expose inference through a backend API.
+7. Build a dashboard that shows measurement trends, the risk result, alerts and the main contributing measurements.
+8. Cover critical behaviour with automated tests and document how to reproduce every result.
 
-## 5. Proposed project direction
+## 5. My proposed solution
 
-The proposed direction is **time-series monitoring and early warning, with early sepsis prediction as the concrete machine-learning task**.
+### 5.1 Main functions
 
-This direction is preferred because it provides:
+1. **Import and validate** patient files in the Challenge format; reject malformed input with a clear error.
+2. **Estimate risk every hour** from features built only from past and current measurements.
+3. **Turn risk into an alert state** using a threshold chosen on validation data, a suppression window against repeated alerts, and an "insufficient data" state when key vital signs are missing or outdated.
+4. **Explain each result** by showing the measurements that contributed most to the risk.
+5. **Compare models** (partial SIRS, logistic regression, LightGBM) on the same patients and show the metrics.
+6. **Serve everything through a REST API** used by the dashboard and usable by other clients.
 
-- a clearly defined temporal prediction problem;
-- an open candidate dataset;
-- objective evaluation;
-- meaningful Software Engineering work beyond a notebook, including ingestion, validation, preprocessing, inference, API design, alert logic, visualization, experiment tracking, and testing.
+### 5.2 How it works
 
-This is a project-design choice, not a claim that sepsis prediction is medically superior to other possible topics. A structured-indicator risk model using a public dataset remains a lower-complexity fallback if the supervisor asks to narrow the scope differently.
+1. *Offline:* raw files → validation → feature building → training → evaluation → model file with metadata and a metrics report.
+2. *Online:* the dashboard asks the API for a patient's data → the API builds features with the same code used in training → the model returns a risk → the alert logic and explanation are added → the result is stored and displayed.
 
-## 6. Candidate data source
+Using one feature-building module for both training and inference prevents differences between what the model learned and what it sees later. The component view is in the [architecture description](07-architecture/architecture.md).
 
-The candidate dataset is **PhysioNet / Computing in Cardiology Challenge 2019: Early Prediction of Sepsis from Clinical Data**.
+### 5.3 Expected outcomes
 
-The public training data contain hourly ICU records with 40 variables:
+1. A documented, leakage-safe preprocessing pipeline for clinical time series.
+2. A trained early-sepsis model with two reproducible baselines.
+3. An evaluation report with internal and external results, confidence intervals and alert metrics.
+4. A REST API for inference with an OpenAPI description.
+5. A dashboard with patient list, patient detail and model comparison views.
+6. Automated tests for validation, feature building, alert logic and the API.
+7. A discussion of dataset shift, missing data, false alerts and the absence of clinical validation.
 
-- 8 vital-sign variables;
-- 26 laboratory variables;
-- 6 demographic or administrative variables;
-- plus `SepsisLabel`.
+## 6. Data and method in brief
 
-Missing measurements are represented in the data, and the public dataset is de-identified.
+- **Data:** PhysioNet/CinC Challenge 2019 training sets A and B (40,336 ICU stays, hourly, 40 variables + `SepsisLabel`; CC BY 4.0; DOI 10.13026/v64v-d857). The data are de-identified and are never committed to the repository ([data/README.md](../data/README.md)).
+- **Task:** hourly prediction of `SepsisLabel`, which is 1 from 6 hours before Sepsis-3 onset.
+- **Split:** patient-level split of set A for training, validation and internal testing; set B as an external test.
+- **Models:** partial SIRS rule and logistic regression as baselines; LightGBM as the main model.
+- **Evaluation:** AUROC, AUPRC, sensitivity, specificity, PPV, calibration, alerts per patient-day and lead time, with bootstrap confidence intervals.
 
-Dataset DOI: `10.13026/v64v-d857`
+All decisions and their reasons: [ML methodology](05-technology/ml-methodology.md). Test plan: [verification plan](09-verification.md).
 
-Only public, de-identified data will be used. Patient datasets will not be committed to the Git repository.
-
-## 7. Machine-learning task
-
-The prototype will estimate sepsis risk from measurements available up to a given patient-hour.
-
-The experimental protocol will follow these rules:
-
-- split patients rather than individual rows between training and evaluation data;
-- learn preprocessing only from the training portion;
-- never use future patient measurements for an earlier prediction;
-- document missing-data handling;
-- evaluate the main model and baselines under the same temporal setup;
-- record the exact model, preprocessing, threshold, and evaluation configuration.
-
-The exact prediction horizon and the final handling of the Challenge `SepsisLabel` will be fixed before implementation and reviewed with the supervisor. The original Challenge labels begin six hours before the defined onset; the diploma protocol must therefore state clearly how those labels are interpreted.
-
-The original hidden Challenge test set is not publicly available. The diploma will use a reproducible evaluation on the public data and will explicitly state that this does not reproduce the original hidden-hospital test.
-
-## 8. Baselines and model comparison
-
-A simple **logistic-regression baseline** using the same evaluation split is proposed as the minimum reproducible baseline.
-
-It is intentionally treated as a floor rather than assumed to be a strong clinical comparator. Literature reviewed for the project shows that logistic regression can underperform rule-based scores in some settings, while stronger ML models may outperform them.
-
-The main model will be selected after the technology comparison. Reasonable candidates include:
-
-- gradient-boosted trees;
-- a time-aware neural model.
-
-A NEWS/NEWS2-style score will only be used if it can be reproduced fairly from the selected data. The Challenge dataset directly contains respiration rate, oxygen saturation, systolic blood pressure, heart rate, and temperature, but it does not directly contain all information required for full NEWS2. Therefore, the project will not label an incomplete approximation as full NEWS2.
-
-## 9. Planned system workflow
-
-1. Load de-identified time-series data.
-2. Validate the input schema and values.
-3. Apply documented missing-data and preprocessing rules.
-4. Construct model inputs without future-information leakage.
-5. Run baseline and main-model inference.
-6. Convert the model output into a clearly defined risk state.
-7. Serve the result through a backend API.
-8. Display the risk result together with measurement trends in the dashboard.
-9. Record experiment and evaluation outputs for reproducibility.
-
-## 10. Scope
+## 7. Scope
 
 ### In scope
 
 - ingestion and validation of the selected public dataset;
 - temporal preprocessing and missing-data handling;
-- model training and reproducible evaluation;
-- baseline comparison;
-- backend/API inference;
-- minimal application/model metadata storage where needed;
-- minimal dashboard;
-- visualization of time-series indicators and analytical results;
+- model training, baseline comparison and reproducible evaluation;
+- alert logic and explanation of results;
+- backend API for inference;
+- minimal storage of predictions and model metadata;
+- dashboard with trends, risk and alerts;
 - automated tests for critical components;
 - experiment and evaluation documentation.
 
 ### Out of scope
 
-- autonomous medical diagnosis;
-- treatment or medication recommendations;
-- replacement of clinical judgement;
-- production hospital deployment;
-- integration with a real hospital information system;
+- autonomous diagnosis or treatment recommendations;
+- replacing clinical judgement;
+- deployment in a hospital or integration with a hospital information system;
 - identifiable patient data;
-- intervention on real patients;
-- medical-device certification or claims of clinical validation;
-- claims of generalization to hospitals or populations not represented in the evaluation.
+- use on real patients;
+- medical-device certification or claims of clinical validity;
+- claims about hospitals or populations not represented in the evaluation.
 
-## 11. Expected outcomes
+## 8. Engineering complexity
 
-1. A documented preprocessing pipeline for clinical time-series data.
-2. A trained early-sepsis prediction model.
-3. At least one reproducible baseline.
-4. A backend API for inference.
-5. A minimal dashboard for trends and risk results.
-6. Automated tests for critical behaviour.
-7. A reproducible evaluation report.
-8. A documented discussion of dataset shift, missingness, temporal validity, false alerts, and lack of prospective clinical validation.
+- time-series ingestion and schema validation;
+- missing-data processing and leakage-safe temporal features;
+- model training, versioning and inference shared with the API;
+- alert logic with thresholds, suppression and data-quality states;
+- REST API and dashboard integration;
+- evaluation pipeline with bootstrap confidence intervals and an external test;
+- automated tests;
+- traceability through Git, pull requests and YouTrack.
 
-## 12. Preliminary evaluation plan
+## 9. Main risks
 
-The final evaluation plan will use multiple metrics because the task is imbalanced and time-dependent:
-
-- AUROC;
-- AUPRC;
-- sensitivity / recall;
-- specificity;
-- precision / positive predictive value;
-- F1 where useful;
-- lead time before onset where supported by the final setup;
-- false-alert burden or alert frequency where supported by the final setup.
-
-All compared models will use the same split, preprocessing rules, and temporal constraints.
-
-## 13. Engineering complexity
-
-The engineering work includes:
-
-- time-series data ingestion and validation;
-- missing-data processing;
-- leakage-safe temporal feature construction;
-- model training and versioned inference;
-- backend/API development;
-- risk and alert logic;
-- dashboard integration;
-- experiment/evaluation pipeline;
-- automated testing;
-- traceability through Git and YouTrack.
-
-The supervisor will review whether the proposed scope is sufficient and whether it should be narrowed or adjusted.
-
-## 14. Main risks
+The full register is in [risks](10-management/risks.md). The most important for scope:
 
 | Risk | Mitigation |
 |---|---|
-| Missing and irregular measurements | Define explicit preprocessing rules and test them |
-| Temporal leakage | Use only current and past measurements for each prediction |
-| Class imbalance | Report AUPRC and class-sensitive metrics alongside AUROC |
-| Poor generalization | Avoid clinical-validity claims and discuss dataset shift |
-| Excessive false alerts | Measure PPV and alert burden where possible |
-| Scope becomes too large | Keep one main prediction target and a minimal interface |
-| Output is mistaken for medical advice | Label the prototype clearly as research decision support |
-| Results cannot be reproduced | Version code, model settings, preprocessing, and evaluation configuration |
+| Temporal leakage inflates results | Leakage rules plus a dedicated unit test |
+| Poor transfer to a new hospital | External test on set B; no clinical-validity claims |
+| Too many false alerts | Report PPV and alerts per patient-day; suppression window |
+| Scope grows beyond one student | One target, one main model; recurrent model kept optional |
+| Output mistaken for medical advice | "Research prototype, not a diagnosis" on every result screen |
 
-## 15. Link to evidence and literature
+## 10. Evidence and literature
 
-The literature review contains 12 meaningfully used peer-reviewed publications covering:
+- The literature review uses 12 peer-reviewed publications ([literature matrix](03-literature/literature-matrix.md)).
+- Existing systems are compared on 9 criteria ([system comparison](04-existing-systems/system-comparison.md)).
+- User evidence and data analysis are in [docs/02-evidence](02-evidence/). The first answers support the primary-user definition (AS-01), but they come from two respondents only; checking continues.
 
-- early sepsis prediction;
-- clinical-deterioration prediction;
-- ML versus clinical baselines;
-- external validation;
-- alert burden;
-- deployment and human workflow.
+## 11. Open decisions for the supervisor
 
-User evidence is documented separately. Until real discussions are completed, the primary-user and workflow assumptions remain assumptions rather than findings.
+1. Is early sepsis prediction an acceptable concrete focus for the agreed topic? (Q-01; see the [research justification](01-research-justification.md))
+2. Are partial SIRS and logistic regression acceptable baselines?
+3. Is the proposed engineering scope sufficient for the diploma?
 
-## 16. Open decisions for supervisor review
-
-The following decisions still require supervisor discussion rather than being presented as settled facts:
-
-- whether early sepsis prediction is an acceptable concrete interpretation of the approved diploma topic;
-- final primary user;
-- exact prediction horizon and label interpretation;
-- final baseline strategy;
-- whether to include the official Challenge utility score;
-- whether the proposed engineering scope is appropriate for the diploma.
-
-## 17. Key supporting references
+## 12. Key references
 
 1. Reyna MA, Josef CS, Jeter R, et al. *Early Prediction of Sepsis From Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019.* Critical Care Medicine. 2020;48(2):210–217. DOI: 10.1097/CCM.0000000000004145.
 2. PhysioNet. *Early Prediction of Sepsis from Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019 (version 1.0.0).* DOI: 10.13026/v64v-d857.
-3. The remaining scientific sources are documented in `literature-matrix.md`.
+3. Other sources (#1–#12) are listed in the [literature matrix](03-literature/literature-matrix.md).
