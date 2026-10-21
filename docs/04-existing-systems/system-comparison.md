@@ -1,11 +1,11 @@
 # Existing System Comparison
 
-**Status:** DRAFT. Not yet reviewed by my supervisor.
-**Last updated:** 13 Oct 2026
+**Status:** revised for pre-defense 1 (DIP-18)  
+**Last updated:** 21 Oct 2026
 
 ## 1. What I compared and why
 
-I looked for existing systems that are close to what I want to build: software that watches repeated patient measurements and warns clinicians about sepsis or deterioration. I chose five that have peer-reviewed evaluations. For each one I use the same nine criteria.
+I compared existing systems that are close to what I want to build: software that watches repeated patient measurements and warns clinicians about sepsis or deterioration. I chose five systems that have peer-reviewed evaluations and used the same nine criteria for each.
 
 Systems included:
 
@@ -17,78 +17,66 @@ Systems included:
 
 Not counted as systems, but used elsewhere in the project:
 
-- **NEWS2** (Royal College of Physicians) is a rule-based score, not a software system. I plan to use a NEWS-style score as a possible baseline, not as a compared system.
-- **eCART and Rothman Index** appear in Edelson et al. (2024) as AI scores that were compared with NEWS. I did not add them to keep the comparison to five systems.
+- **NEWS2** is a rule-based score, not a software system. Full NEWS2 cannot be computed from my dataset (no consciousness level), so it is not used as a baseline.
+- **eCART and the Rothman Index** appear in Edelson et al. (2024) as AI scores compared with NEWS. They were left out to keep the comparison to five systems with the most detailed evidence.
+- **Open-source Challenge 2019 entries.** After the PhysioNet/CinC Challenge 2019 all participant software was posted publicly (91 archives on the [dataset page](https://physionet.org/content/challenge-2019/1.0.0/sources/)). This is research code for the prediction task, not a system with users, alerts and an interface, so it is discussed in §4 rather than compared as a system.
 
-Limits of this comparison:
-
-- Two of the five are proprietary Epic tools. I did not find or open vendor documentation. What I know about them comes from peer-reviewed studies by independent or university groups.
-- I used abstracts and indexed article text. I did not read full texts for this file. Details I could not find are marked "not found" or [MUST VERIFY]. A few facts come from press articles; they are marked "press".
-- Source IDs like [S1] point to the list in Section 5.
+**Sources and their strength.** Source IDs `LIT-#` refer to the [literature matrix](../03-literature/literature-matrix.md), whose full texts I reviewed. `S-#` are other peer-reviewed sources listed in §5, used through their abstracts or published summaries. Press articles are not used as evidence. Where a source does not report something, the cell says "not reported".
 
 ## 2. Comparison table
 
 | Criterion | Epic Sepsis Model | Epic Deterioration Index | COMPOSER | CHARTwatch | TREWS |
 |---|---|---|---|---|---|
-| **C1. Clinical problem** | Early sepsis prediction in hospitalized patients [S1] | Clinical deterioration: rapid-response activation, ICU transfer, cardiopulmonary arrest or death [S3b] | Early sepsis (Sepsis-3) prediction, 4–48 h before clinical suspicion [S4] | Deterioration, defined as in-hospital death or ICU transfer [S9] | Sepsis early warning [S6] |
-| **C2. Setting and users** | Hospitalized patients at an academic centre (the validation site). Who receives the alert: not found [S1] | Inpatient wards. In one study, alerts went to a nurse and a physician within a shared workflow [S3, S3b]. Another study used medical-surgical ward encounters at 7 hospitals [S2] | ICU and emergency department cohorts [S4]. Deployed in two emergency departments of one health system [S5] | General internal medicine ward at one teaching hospital. Risk scores reach physicians and nurses [S9] | Five hospitals (two academic, three community). Providers can confirm the alert in the health record [S6, S6c] |
-| **C3. Input data** | Routine health-record data. Variable list not found [S1] | 31 health-record measures (per a summary of Gallo et al.) [S3b] | Routine clinical variables from the health record, real-time feed in deployment [S4, S5]. Exact list [MUST VERIFY] | Labs, vitals and other health-record data [S9]. "Over 100 variables" is from a podcast with the lead author (press) [N3]. [MUST VERIFY] | Health-record data. Specific inputs [MUST VERIFY] [S6] |
-| **C4. Prediction method** | Proprietary penalized logistic regression [S1] | Ordinal logistic regression [S3b] | Deep learning with a conformal-prediction layer that can output "indeterminate" [S4] | "Time-aware" MARS model, chosen after trying logistic regression, Lasso, generalized additive models and neural networks. Training and validation split by calendar date [S9] | Machine-learning model. Model type [MUST VERIFY] [S6] |
-| **C5. Real-time operation and alerts** | Alert model, evaluated at a score threshold of 6. Update frequency not found [S1] | Score calculated every 15 minutes (per a summary). Alert at a score threshold, plus a defined nurse–physician workflow [S3, S3b] | Hourly sequential prediction in the study [S4]. Real-time health-record data in deployment [S5]. Alert recipients and format [MUST VERIFY] | Real-time risk scores, clinical alerts and a care pathway for high-risk patients [S8]. Press adds twice-daily alert emails to nursing teams [N1] | Alert in the health record that a provider can confirm. High-risk flag [S6] |
-| **C6. Explanation of the output** | Not found in the sources I opened [MUST VERIFY] | Not found [MUST VERIFY] | Marks unfamiliar inputs as "indeterminate" instead of forcing a prediction [S4]. Display of contributing variables [MUST VERIFY] | Not found [MUST VERIFY] | Not found [MUST VERIFY] |
-| **C7. Evidence of validation or deployment** | External validation at one hospital, 38,455 hospitalizations: AUC 0.63, sensitivity 33% and PPV 12% at threshold 6 [S1] | AUROC 0.808 versus NEWS 0.829 in 362,926 encounters at 7 hospitals [S2]. Regression-discontinuity study (9,938 patients): 10.4 percentage points lower risk of care escalation [S3] | Six cohorts, 515,720 patients, internal, temporal and external validation, AUC 0.925–0.953 (ICU) and 0.938–0.945 (ED) [S4]. Emergency department deployment study (6,217 patients): mortality 9.49% after, 1.9 points lower (17% relative) [S5] | Nonrandomized controlled study, 13,649 general-medicine admissions: lower non-palliative death than before. Press reports 2.1% before and 1.6% after [S8, N1] | Prospective multi-site cohort: 590,736 patients monitored, 6,877 sepsis patients alerted before antibiotics. Confirmation within 3 h was linked to 3.3 points lower adjusted mortality [S6] |
-| **C8. Transparency and access** | Proprietary (Epic) [S1] | Proprietary (Epic Systems Corporation) [S3] | Peer-reviewed description [S4]. Code availability [MUST VERIFY]. A press report says some authors co-founded a company to commercialize such tools [N4]. [MUST VERIFY in the paper] | In-house hospital system with published methods [S8, S9]. Press says the developers want to make it available for testing [N5]. [MUST VERIFY] | Commercial product from Bayesian Health, founded by lead investigators (press). FDA clearance claim in press [N2]. [MUST VERIFY on the FDA site] |
-| **C9. Limitations reported or visible** | Missed 67% of sepsis cases and alerted on 18% of hospitalizations. Poor calibration. One hospital [S1] | Lower AUROC than NEWS in one large comparison [S2]. Effect measured near the threshold at one centre [S3] | Retrospective development. Deployment was non-randomized in two EDs with a 145-day post-period [S4, S5] | Nonrandomized. Observation ended when the model changed for new software and data pipelines [S8]. Study group aged 55–80 per press [N1] | Observational. The benefit was linked to provider response within 3 hours, which does not prove the alert caused it (my interpretation) [S6] |
+| **C1. Clinical problem** | Early sepsis prediction in hospitalized patients [LIT-6] | Clinical deterioration: rapid-response activation, ICU transfer, cardiopulmonary arrest [LIT-12] | Early sepsis (Sepsis-3) prediction [LIT-7] | Deterioration of general internal medicine patients: death or ICU transfer [LIT-11, S-2] | Sepsis early warning [S-1] |
+| **C2. Setting and users** | Hospitalized adults at one academic centre (validation site); alert recipients not reported [LIT-6] | Four general medicine units; alerts go to a nurse and a physician, followed by a structured huddle [LIT-12]; medical-surgical wards at 7 hospitals in a comparison study [LIT-5] | ICU and emergency department cohorts [LIT-7]; deployed in two emergency departments, alerts to nurses [LIT-9] | General internal medicine ward of one teaching hospital; clinicians are notified of high-risk patients [LIT-11] | Five hospitals (two academic, three community); providers confirm the alert in the health record [S-1, S-3] |
+| **C3. Input data** | Routine health-record data; variable list not reported [LIT-6] | 31 health-record measures [LIT-12] | Routine clinical variables from the health record, real-time feed in deployment [LIT-7, LIT-9]; full list not reported in the sources reviewed | Laboratory values, vital signs and other health-record data [LIT-11, S-2]; exact count not reported in the sources reviewed | Health-record data; specific inputs not reported in the abstract [S-1] |
+| **C4. Prediction method** | Proprietary penalized logistic regression [LIT-6] | Ordinal logistic regression [LIT-12] | Deep model with representation learning and a conformal-prediction layer that can output "indeterminate" [LIT-7] | Time-aware multivariate adaptive regression splines (MARS) [LIT-11] | Machine-learning model; type not reported in the abstract [S-1] |
+| **C5. Real-time operation and alerts** | Score threshold 6 evaluated; update frequency not reported [LIT-6] | Score every 15 minutes; alert at threshold 65 with a defined nurse–physician response [LIT-12] | Hourly predictions; cloud platform with health-record data feed and a nurse-facing alert inside the health record [LIT-9] | Real-time risk levels (high/medium/low), alerts with silencing, and a care pathway for high-risk patients [LIT-11] | Alert in the health record that a provider can confirm [S-1] |
+| **C6. Explanation of the output** | Not reported [LIT-6] | Not reported [LIT-12] | Marks unfamiliar inputs as "indeterminate"; deployed alert shows the top contributing features [LIT-7, LIT-9] | Not reported in the sources reviewed | Not reported in the abstract [S-1] |
+| **C7. Evidence of validation or deployment** | External validation, 38,455 hospitalizations: AUC 0.63; sensitivity 33%, PPV 12% at threshold 6 [LIT-6] | AUROC 0.808 vs NEWS 0.829 in 362,926 encounters at 7 hospitals [LIT-5]; regression-discontinuity study of 9,938 patients: −10.4 percentage points in the composite outcome at the threshold [LIT-12] | 515,720 patients in six cohorts; AUC 0.925–0.953 (ICU) and 0.938–0.945 (ED) [LIT-7]; deployment in 6,217 septic patients: mortality 1.9 points (17% relative) lower than expected [LIT-9] | Nonrandomized controlled study: non-palliative death 2.1% before vs 1.6% during the intervention, adjusted RR 0.74 (0.55–1.00) [LIT-11] | Prospective multi-site study: 590,736 patients monitored; confirmation of the alert within 3 hours associated with 3.3 points lower adjusted mortality [S-1] |
+| **C8. Transparency and access** | Proprietary (Epic) [LIT-6] | Proprietary (Epic) [LIT-12] | Method described in peer-reviewed papers; code availability not reported in the sources reviewed [LIT-7] | In-house hospital system with published methods [LIT-11, S-2] | Commercial product; details limited in the abstract [S-1] |
+| **C9. Limitations reported or visible** | Missed 67% of sepsis cases; alerts in 18% of hospitalizations; one centre [LIT-6] | Lower AUROC than NEWS in one large comparison [LIT-5]; effect measured only near the threshold at one centre [LIT-12] | Retrospective development [LIT-7]; deployment nonrandomized, two EDs of one health system, short follow-up [LIT-9] | Nonrandomized; possible unmeasured confounding; the model and pipeline changed after the study window [LIT-11] | Observational: benefit linked to provider response within 3 hours, which does not prove that the alert caused it (my interpretation) [S-1] |
 
 ## 3. What I notice (my interpretation)
 
-- Most of these systems predict with ordinary statistical or machine-learning models. The surrounding system matters just as much: alerts, thresholds, a clinical response and monitoring (CHARTwatch, EDI, TREWS, COMPOSER's deployment).
-- The best evidence is for systems whose developers also describe the workflow around them. The evidence for the proprietary Epic tools is mostly independent external validation, and it is not good for the sepsis model (AUC 0.63).
-- Explanation of the output (C6) is the criterion I know least about. I found little in the sources I opened. COMPOSER's "indeterminate" output is the clearest example of showing uncertainty.
-- None of the sources I opened shows a system that a student can run and inspect end to end.
+- Most systems use ordinary statistical or machine-learning models (logistic regression, MARS). What differs is the surrounding system: thresholds, alert recipients, response pathways and monitoring (EDI, CHARTwatch, COMPOSER deployment).
+- The strongest evidence exists where the developers also describe the workflow. The evidence for the proprietary Epic sepsis model is mostly independent external validation, and it is weak (AUC 0.63).
+- Explanation of the output (C6) is the least reported criterion. COMPOSER is the only system with documented uncertainty handling ("indeterminate") and displayed contributing features.
+- Alert burden is a recurring problem: the Epic sepsis model alerted in 18% of hospitalizations while missing two thirds of sepsis cases.
 
 ## 4. Why the proposed diploma solution is still needed
 
-My project does not try to beat these systems. They are large, mostly hospital-integrated and some are commercial, and I cannot evaluate them. The need I see is smaller and more specific.
+My project does not try to beat these systems. They are hospital-integrated, often proprietary, and evaluated on data I cannot access. The need I see is narrower.
 
-- **Transparency and reproducibility.** From the sources I opened, I could not confirm that the code, trained models or full variable lists of these systems are publicly available. Two of them are proprietary. A transparent pipeline on an open dataset lets a reader inspect every step: preprocessing, leakage prevention, baselines and metrics.
-- **A fair comparison on shared ground.** The literature I reviewed says results are hard to compare and often drop at a new hospital (Moor 2021, Moor 2023, Wong 2021). An open pipeline with the same split and metrics for the model and the baselines makes the comparison visible.
-- **Alert behaviour as a first-class result.** Studies show that false alarms and workflow decide usefulness (Wong 2021; van der Vegt 2024). My prototype will report PPV and alert burden next to AUROC, and I will present the output as decision support with its limits.
-- **A Software Engineering contribution.** The deployment papers describe pipelines, interfaces and monitoring only briefly. A small, tested, documented system that shows these parts is a reasonable diploma outcome.
+- **Open systems vs open models.** The deployed systems above are proprietary or in-house; I could not confirm public code for any of them. On the other hand, open research code exists: the Challenge 2019 entries were published. That code covers model training and scoring for the Challenge, not a system that a user works with. The gap is therefore not "no open sepsis model" but **no open, tested system** that combines leakage-safe processing, an API, alert logic with suppression and data-quality states, explanations, and a user interface.
+- **A fair comparison on shared ground.** Results are hard to compare and often drop at a new hospital (LIT-1, LIT-6, LIT-8). An open pipeline that evaluates the model and two baselines on the same patients, internally and on a second hospital system, makes that comparison visible.
+- **Alert behaviour as a first-class result.** False alarms and workflow decide usefulness (LIT-6, LIT-10). My prototype reports PPV, alerts per patient-day and lead time next to AUROC.
+- **A Software Engineering contribution.** Deployment papers describe pipelines, interfaces and monitoring only briefly (LIT-9, LIT-10). A small, tested, documented system that shows these parts is a reasonable diploma outcome.
 
-Limits: the prototype will use public de-identified data, will not be clinically validated, and will not claim better outcomes than these systems. Whether this need is real for users is not yet confirmed. User discussions are not done (see `docs/02-evidence/`). So this section is a draft that depends on that evidence.
+Limits: the prototype uses public de-identified data, is not clinically validated, and makes no claim of better outcomes than these systems. Whether the need is real for users is checked in the user discussions ([evidence](../02-evidence/evidence-plan.md)).
 
 ## 5. Sources
 
-Peer-reviewed papers (opened: abstract and indexed text, not full text, unless noted):
+Literature-matrix sources (full texts reviewed): LIT-5 Edelson et al. 2024; LIT-6 Wong et al. 2021; LIT-7 Shashikumar et al. 2021; LIT-9 Boussina et al. 2024; LIT-11 Verma et al. 2024; LIT-12 Gallo et al. 2024. Full citations and DOIs are in the [literature matrix](../03-literature/literature-matrix.md).
 
-- [S1] Wong A, et al. External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients. JAMA Intern Med, 2021. https://pmc.ncbi.nlm.nih.gov/articles/PMC8218233/ (full text read earlier)
-- [S2] Edelson DP, et al. Early Warning Scores With and Without Artificial Intelligence. JAMA Netw Open 2024;7(10):e2438986. https://pmc.ncbi.nlm.nih.gov/articles/PMC11544488/ (full text read earlier)
-- [S3] Gallo RJ, et al. Effectiveness of an Artificial Intelligence-Enabled Intervention for Detecting Clinical Deterioration. JAMA Intern Med 2024. https://pmc.ncbi.nlm.nih.gov/articles/PMC10964159/
-- [S3b] Summary of Gallo et al. in The Hospitalist, used for the model description (31 measures, every 15 minutes, ordinal logistic regression): https://www.the-hospitalist.org/hospitalist/article/38326/in-the-literature/efficacy-of-ai-models-in-detecting-clinical-deterioration/ [MUST VERIFY against the paper]
-- [S4] Shashikumar SP, et al. Artificial intelligence sepsis prediction algorithm learns to say "I don't know". npj Digit Med 2021;4:134. https://pmc.ncbi.nlm.nih.gov/articles/PMC8429719/
-- [S5] Boussina A, et al. Impact of a deep learning sepsis prediction model on quality of care and survival. npj Digit Med 2024;7:14. https://pmc.ncbi.nlm.nih.gov/articles/PMC10805720/
-- [S6] Adams R, et al. Prospective, multi-site study of patient outcomes after implementation of the TREWS machine learning-based early warning system for sepsis. Nat Med 2022;28(7):1455–1460. DOI 10.1038/s41591-022-01894-0. PubMed record 35864252: https://pubmed.ncbi.nlm.nih.gov/35864252/
-- [S6c] Commentary on Adams et al. (hospital setting: two academic and three community hospitals): https://pmc.ncbi.nlm.nih.gov/articles/PMC9512693
-- [S8] Verma AA, et al. Clinical evaluation of a machine learning-based early warning system for patient deterioration. CMAJ 2024. DOI 10.1503/cmaj.240132. https://www.cmaj.ca/lookup/doi/10.1503/cmaj.240132
-- [S9] Pou-Prom C, et al. From compute to care: Lessons learned from deploying an early warning system into clinical practice. Front Digit Health 2022. DOI 10.3389/fdgth.2022.932123. https://pmc.ncbi.nlm.nih.gov/articles/PMC9483018
+Other peer-reviewed sources:
 
-Press and secondary sources (use only as pointers, not as evidence):
+- [S-1] Adams R, et al. *Prospective, multi-site study of patient outcomes after implementation of the TREWS machine learning-based early warning system for sepsis.* Nature Medicine. 2022;28(7):1455–1460. DOI 10.1038/s41591-022-01894-0. Used through the abstract ([PubMed 35864252](https://pubmed.ncbi.nlm.nih.gov/35864252/)).
+- [S-2] Pou-Prom C, et al. *From compute to care: Lessons learned from deploying an early warning system into clinical practice.* Frontiers in Digital Health. 2022. DOI 10.3389/fdgth.2022.932123. ([PMC9483018](https://pmc.ncbi.nlm.nih.gov/articles/PMC9483018))
+- [S-3] Commentary on Adams et al. describing the hospital setting ([PMC9512693](https://pmc.ncbi.nlm.nih.gov/articles/PMC9512693)).
 
-- [N1] HospiMedica, AI-Based System Reduces Risk of Unexpected Deaths in Hospitalized Patients (17 Sep 2024): https://www.hospimedica.com/critical-care/articles/294802475/ai-based-system-reduces-risk-of-unexpected-deaths-in-hospitalized-patients.html
-- [N2] PulmCCM, FDA Clears A Slightly Better Sepsis Alert: https://www.pulmccm.org/p/fda-clears-a-slightly-better-sepsis
-- [N3] CMAJ podcast with Amol Verma: https://buzzsprout.com/1815691/episodes/15776595-ai-versus-physicians-who-s-better-at-spotting-high-risk-patients
-- [N4] Physician's Weekly, HealthDay summary of Boussina et al.: https://www.physiciansweekly.com/?p=505145
-- [N5] National Seniors Australia, AI system reduces hospital deaths: https://nationalseniors.com.au/news/health/ai-system-reduces-hospital-deaths
+Other resources:
 
-## 6. Still to check
+- PhysioNet/CinC Challenge 2019 — published participant software: https://physionet.org/content/challenge-2019/1.0.0/sources/
 
-| Item | Status |
+## 6. Changes in this revision
+
+| Change | Reason |
 |---|---|
-| Open each [S] link and confirm title, authors and DOI | [MUST VERIFY] |
-| Epic documentation for ESM and EDI (variables, update frequency, explanation) | Not opened; [MUST VERIFY] |
-| Inputs and model type of TREWS and COMPOSER, alert recipients and explanation display | [MUST VERIFY] against the papers |
-| CHARTwatch variable count, availability statement | [MUST VERIFY] |
-| FDA status of TREWS | [MUST VERIFY] on the FDA database |
-| Conflict-of-interest statements of S5, S6, S8 | [MUST VERIFY] |
-| Whether these five are the right set for my committee | [REQUIRES SUPERVISOR APPROVAL] |
+| Source IDs aligned with the literature matrix (`LIT-#`) | Removes duplicate numbering and the missing S7 |
+| EDI, COMPOSER and CHARTwatch cells filled from the full texts in the literature matrix | Several [MUST VERIFY] items were already answered there |
+| Press sources removed from the table | Committee evaluates whether claims are supported by evidence |
+| CHARTwatch "aged 55–80" removed | It is the interquartile range of age, not an inclusion criterion (literature matrix, §9) |
+| TREWS FDA-status claim removed | Only a press source supported it |
+| Open-source Challenge 2019 entries added to §1 and §4 | The gap is stated precisely: open research code exists, an open tested system does not |
+| Remaining unknowns written as "not reported" | Unknown details are not guessed |
