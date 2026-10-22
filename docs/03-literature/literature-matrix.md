@@ -74,12 +74,12 @@ The original queries that led to #7–#12 were not recorded when the sources wer
 
 | # | Authors | Year | Title | Venue | DOI | Access / verification |
 |---|---|---:|---|---|---|---|
-| 1 | Moor M, Rieck B, Horn M, Jutzeler CR, Borgwardt K | 2021 | *Early Prediction of Sepsis in the ICU Using Machine Learning: A Systematic Review* | Frontiers in Medicine 8:607952 | 10.3389/fmed.2021.607952 | Open full text; previously reviewed |
-| 2 | Reyna MA, Josef CS, Jeter R, Shashikumar SP, Westover MB, Nemati S, Clifford GD, Sharma A | 2020 | *Early Prediction of Sepsis From Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019* | Critical Care Medicine 48(2):210–217 | 10.1097/CCM.0000000000004145 | Open full text; previously reviewed |
-| 3 | Lashen H, St John TL, Almallah YZ, Sasidhar M, Shamout FE | 2023 | *Machine Learning Models Versus the National Early Warning Score System for Predicting Deterioration* | JMIR AI 2:e45257 | 10.2196/45257 | Open full text; previously reviewed |
-| 4 | Yadgarov MY, Landoni G, Berikashvili LB, et al. | 2024 | *Early detection of sepsis using machine learning algorithms: a systematic review and network meta-analysis* | Frontiers in Medicine 11:1491358 | 10.3389/fmed.2024.1491358 | Open full text; previously reviewed |
-| 5 | Edelson DP, Churpek MM, Carey KA, et al. | 2024 | *Early Warning Scores With and Without Artificial Intelligence* | JAMA Network Open 7(10):e2438986 | 10.1001/jamanetworkopen.2024.38986 | Open full text; previously reviewed |
-| 6 | Wong A, Otles E, Donnelly JP, et al. | 2021 | *External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients* | JAMA Internal Medicine 181(8):1065–1070 | 10.1001/jamainternmed.2021.2626 | Open full text; previously reviewed |
+| 1 | Moor M, Rieck B, Horn M, Jutzeler CR, Borgwardt K | 2021 | *Early Prediction of Sepsis in the ICU Using Machine Learning: A Systematic Review* | Frontiers in Medicine 8:607952 | 10.3389/fmed.2021.607952 | Open full text; full text reviewed |
+| 2 | Reyna MA, Josef CS, Jeter R, Shashikumar SP, Westover MB, Nemati S, Clifford GD, Sharma A | 2020 | *Early Prediction of Sepsis From Clinical Data: The PhysioNet/Computing in Cardiology Challenge 2019* | Critical Care Medicine 48(2):210–217 | 10.1097/CCM.0000000000004145 | Open full text; full text reviewed |
+| 3 | Lashen H, St John TL, Almallah YZ, Sasidhar M, Shamout FE | 2023 | *Machine Learning Models Versus the National Early Warning Score System for Predicting Deterioration* | JMIR AI 2:e45257 | 10.2196/45257 | Open full text; full text reviewed |
+| 4 | Yadgarov MY, Landoni G, Berikashvili LB, et al. | 2024 | *Early detection of sepsis using machine learning algorithms: a systematic review and network meta-analysis* | Frontiers in Medicine 11:1491358 | 10.3389/fmed.2024.1491358 | Open full text; full text reviewed |
+| 5 | Edelson DP, Churpek MM, Carey KA, et al. | 2024 | *Early Warning Scores With and Without Artificial Intelligence* | JAMA Network Open 7(10):e2438986 | 10.1001/jamanetworkopen.2024.38986 | Open full text; full text reviewed |
+| 6 | Wong A, Otles E, Donnelly JP, et al. | 2021 | *External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients* | JAMA Internal Medicine 181(8):1065–1070 | 10.1001/jamainternmed.2021.2626 | Open full text; full text reviewed |
 | 7 | Shashikumar SP, Wardi G, Malhotra A, Nemati S | 2021 | *Artificial intelligence sepsis prediction algorithm learns to say “I don’t know”* | npj Digital Medicine 4:134 | 10.1038/s41746-021-00504-6 | Published full text reviewed |
 | 8 | Moor M, Bennett N, Plečko D, Horn M, Rieck B, Meinshausen N, Bühlmann P, Borgwardt K | 2023 | *Predicting sepsis using deep learning across international sites: a retrospective development and validation study* | eClinicalMedicine 62:102124 | 10.1016/j.eclinm.2023.102124 | Open access (CC BY-NC-ND 4.0); full text reviewed |
 | 9 | Boussina A, Shashikumar SP, Malhotra A, Owens RL, El-Kareh R, Longhurst CA, Quintero K, Donahue A, Chan TC, Nemati S, Wardi G | 2024 | *Impact of a deep learning sepsis prediction model on quality of care and survival* | npj Digital Medicine 7:14 | 10.1038/s41746-023-00986-6 | Published full text reviewed; article has a later correction adding omitted Table 3/citation |
@@ -178,13 +178,13 @@ A defensible gap is:
 
 ## 9. Verification notes for the six newly added papers
 
-The previously open items were resolved from the supplied published full texts:
+The following details were checked against the published full texts:
 
-- **#7:** 515,720 refers to patients, not encounters. The 85.5%/77.9% external false-alarm reductions, temporal AUC 0.952/0.940, modified AUC protocol, two-layer FFNN baseline, and commercial Epic comparator are present in the article.
+- **#7:** 515,720 is the number of patients, not encounters. The 85.5%/77.9% external false-alarm reductions, temporal AUC 0.952/0.940, modified AUC protocol, two-layer FFNN baseline, and commercial Epic comparator are present in the article.
 - **#8:** article number 102124, DOI 10.1016/j.eclinm.2023.102124, four database names, 63 inputs, clinical/ML baselines, PPV 42.0%, lead time 3.7 h, and 1.4 false alerts per true alert are present in the article.
 - **#9:** Bayesian structural time-series analysis, counterfactual mortality, AWS/FHIR/HL7v2 deployment architecture, antibiotic-timing analysis, and deployment limitations are present in the article.
 - **#10:** DOI 10.1093/jamia/ocad220, 107 metrics, performance decline between implementation stages, alert-suppression/threshold strategies, and the reported observations about simpler logistic-regression systems are present in the article.
-- **#11:** full authorship, CMAJ 196:E1027–E1037, MARS model, RR/CI values, difference-in-differences, process measures, and limitations are present. The previously mentioned “age 55–80” is **not an inclusion age range**; it is the IQR around median age 68 in the intervention GIM cohort.
+- **#11:** full authorship, CMAJ 196:E1027–E1037, MARS model, RR/CI values, difference-in-differences, process measures, and limitations are present. The figure “age 55–80” is **not an inclusion age range**; it is the IQR around the median age of 68 in the intervention GIM cohort.
 - **#12:** the official JAMA citation is 184(5):557–562. The article confirms 9,938 patients, four units, EDI threshold 65, 31 measures every 15 minutes, −10.4 pp (95% CI −20.1 to −0.8; p=.03), and no statistically significant inpatient-mortality effect.
 
 ## 10. Requirement count

@@ -73,10 +73,10 @@ Other resources:
 
 | Change | Reason |
 |---|---|
-| Source IDs aligned with the literature matrix (`LIT-#`) | Removes duplicate numbering and the missing S7 |
-| EDI, COMPOSER and CHARTwatch cells filled from the full texts in the literature matrix | Several [MUST VERIFY] items were already answered there |
-| Press sources removed from the table | Committee evaluates whether claims are supported by evidence |
+| Source IDs aligned with the literature matrix (`LIT-#`) | One numbering across documents; the earlier list had duplicate numbers and a missing S7 |
+| EDI, COMPOSER and CHARTwatch cells filled from the full texts in the literature matrix | These details were available in the reviewed full texts |
+| Press sources removed from the table | Only peer-reviewed sources are used as evidence |
 | CHARTwatch "aged 55–80" removed | It is the interquartile range of age, not an inclusion criterion (literature matrix, §9) |
 | TREWS FDA-status claim removed | Only a press source supported it |
 | Open-source Challenge 2019 entries added to §1 and §4 | The gap is stated precisely: open research code exists, an open tested system does not |
-| Remaining unknowns written as "not reported" | Unknown details are not guessed |
+| Remaining unknowns written as "not reported" | Details missing from the sources are not filled in by assumption |
