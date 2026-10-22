@@ -1,0 +1,25 @@
+@startuml system-context
+' System context diagram (C4 level 1) — DIP-13
+' Source of diagrams/export/system-context.png
+!include <C4/C4_Context>
+
+AddElementTag("outofscope", $borderStyle=DashedLine(), $fontColor="#777777", $bgColor="#f2f2f2", $borderColor="#999999")
+AddRelTag("outofscope", $lineStyle=DashedLine(), $textColor="#777777", $lineColor="#999999")
+
+title System context: Health Indicator Analysis System
+
+Person(clinician, "ICU nurse / physician", "Primary user (supported by first user evidence). Reviews patients, trends, risk and alerts.")
+Person(researcher, "Researcher / ML engineer", "Secondary user. Trains and evaluates models, compares baselines.")
+
+System(system, "Health Indicator Analysis System", "Research prototype. Estimates early sepsis risk from hourly ICU measurements and explains it.")
+
+System_Ext(physionet, "PhysioNet/CinC Challenge 2019 data", "Public, de-identified hourly ICU records, sets A and B (CC BY 4.0).")
+System_Ext(his, "Hospital information system", "Out of scope: no live integration in this diploma.", $tags="outofscope")
+
+Rel(clinician, system, "Views patient list, trends, risk, reasons and alerts", "Web dashboard")
+Rel(researcher, system, "Runs import, training and evaluation; reads reports", "CLI, dashboard, REST API")
+Rel(system, physionet, "Reads downloaded files", "PSV files")
+Rel(his, system, "Live patient data", "out of scope", $tags="outofscope")
+
+SHOW_LEGEND()
+@enduml

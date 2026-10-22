@@ -1,0 +1,73 @@
+@startuml component
+' Component diagram (draft) — DIP-13
+' Source of diagrams/export/component.png
+' Layers top to bottom: dashboard -> API -> core -> storage; the offline pipeline reuses the core.
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+skinparam nodesep 40
+skinparam ranksep 60
+skinparam ArrowColor #555555
+skinparam package {
+  BorderColor #555555
+  FontStyle bold
+}
+
+title Components (draft): Health Indicator Analysis System
+
+package "Dashboard (Streamlit)" as UI {
+  [Patient list view] as V1
+  [Patient detail view] as V2
+  [Model comparison view] as V3
+}
+
+package "Backend API (FastAPI)" as API {
+  [Patients router\n/api/v1/patients] as R1
+  [Prediction router\n/api/v1/predict] as R2
+  [Models router\n/api/v1/models] as R3
+}
+
+package "Offline pipeline (CLI / Makefile)" as OFF {
+  [Ingestion] as ING
+  [Training] as TR
+  [Evaluation] as EV
+}
+
+package "Core (Python package src/ml)" as CORE {
+  [Data validation] as VAL
+  [Feature builder\n(same code for training\nand inference)] as FB
+  [Inference service] as INF
+  [Alert logic] as AL
+  [Explanation (SHAP)] as EXP
+}
+
+database "SQLite\ndemo patients, predictions,\nmodel versions" as DB
+folder "Model store\nmodel file + metadata" as MS
+folder "Dataset files\ndata/raw (not in Git)" as DS
+folder "Evaluation reports" as REP
+
+V1 --> R1 : HTTP/JSON
+V2 --> R1 : HTTP/JSON
+V2 --> R2 : HTTP/JSON
+V3 --> R3 : HTTP/JSON
+
+R1 --> DB
+R2 --> INF
+R2 --> DB : store prediction
+R3 --> MS
+R3 --> REP : read
+
+INF --> FB
+INF --> AL
+INF --> EXP
+INF --> MS : load model
+
+ING --> VAL
+ING --> DS : read
+ING --> DB : load demo patients
+TR --> FB
+TR --> MS : save model
+EV --> INF
+EV --> REP : write
+
+UI -[hidden]right-> OFF
+@enduml
