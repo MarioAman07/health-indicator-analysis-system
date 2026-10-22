@@ -1,6 +1,6 @@
 # Evidence of Relevance
 
-**Status:** Plan ready; real user evidence is not yet complete. No discussion should be entered as evidence until it actually happens.
+**Status:** Collection in progress since 21 Oct 2026 (anonymous survey plus follow-up discussions). No response is entered as evidence until it has actually been received. Results so far: [user-evidence.md](user-evidence.md) — 2 respondents, both with a survey answer and a follow-up exchange (2 discussions). Data analysis: [data-analysis.md](data-analysis.md).
 
 ## 1. Purpose
 
@@ -37,6 +37,15 @@ Priority is given to people with real ward or clinical experience:
 Hospital IT or health-data specialists may provide useful technical background, but they should not replace the user discussions.
 
 ## 4. Discussion format
+
+Two formats are used (from 21 Oct 2026):
+
+1. **Anonymous online survey** (Google Forms) covering the questions of §6 in 13 survey questions. The form was designed with an optional page showing a prototype screen; the version sent on 21 Oct did not include it because the screens were not yet published in the repository. No login and no email collection. Respondents may leave a contact for 1–2 follow-up questions; a survey answer with a follow-up exchange is recorded as a discussion, a survey answer without one is recorded as a survey response.
+2. **Short text or voice discussion** (Telegram or call) with the same questions and follow-ups.
+
+The supervisor was asked on 21 Oct 2026 whether the survey together with the dataset analysis is acceptable evidence (feedback log Q-03).
+
+Common rules for both formats:
 
 - About 10–15 minutes.
 - Text, call, online meeting, or in person.
@@ -85,13 +94,7 @@ Only completed discussions count as user evidence.
 
 ## 8. Evidence register
 
-Fill this table only after real discussions.
-
-| ID | Date | Role / experience | Method | Paraphrased finding | Effect on project | Evidence type |
-|---|---|---|---|---|---|---|
-| EV-01 |  |  |  |  |  | USER-EVIDENCE |
-
-Add EV-02, EV-03, and further rows only when the discussions have actually happened.
+The respondents and the register of real findings are kept in [user-evidence.md](user-evidence.md) (§1–§2). A row is added only for an answer actually received.
 
 ## 9. Assumptions to test
 
@@ -104,7 +107,7 @@ Add EV-02, EV-03, and further rows only when the discussions have actually happe
 | AS-05 | A risk value alone is insufficient for interpretation | E5 |
 | AS-06 | Early monitoring of deterioration is a suitable concrete problem for the proposed system | E1–E3, E8, supervisor feedback |
 
-After the discussions, mark each assumption as supported, partly supported, not supported, or not tested.
+After the discussions, mark each assumption as supported, partly supported, not supported, or not tested. Current statuses: [user-evidence.md](user-evidence.md) §3.
 
 ## 10. Per-discussion summary template
 
@@ -121,11 +124,7 @@ After the discussions, mark each assumption as supported, partly supported, not 
 
 ## 11. Cross-interview synthesis
 
-Complete this only after at least three valid discussions.
-
-| Finding | Respondents supporting/challenging it | Agreement or disagreement | Project decision |
-|---|---|---|---|
-|  |  |  |  |
+A preliminary synthesis of the first two respondents is in [user-evidence.md](user-evidence.md) §4. The full synthesis is written after at least three valid discussions.
 
 The synthesis should explain:
 
@@ -137,11 +136,7 @@ The synthesis should explain:
 
 ## 12. Evidence-to-requirement traceability
 
-Complete this after the discussions.
-
-| Evidence ID | Finding | Requirement affected | Decision |
-|---|---|---|---|
-|  |  |  |  |
+See [user-evidence.md](user-evidence.md) §5.
 
 ## 13. Outreach messages
 
@@ -153,31 +148,31 @@ Complete this after the discussions.
 
 > Здравствуйте! Меня зовут Аман, я студент AITU и делаю дипломный проект по системе анализа показателей пациентов. Для проекта мне нужно понять, как в реальной работе отслеживают возможное ухудшение состояния пациента. Хотел бы задать 8–10 коротких вопросов, это займёт около 10–15 минут и можно ответить текстом. Никакие данные пациентов не нужны, ответы будут использоваться только в анонимном виде. Если Вам будет удобно, буду очень благодарен за помощь. Если неудобно самому, подскажите, пожалуйста, коллегу.
 
-Sending messages is not evidence by itself; only completed discussions count.
+Outreach messages are not evidence; only completed discussions and received survey responses are recorded.
 
-## 14. Supervisor questions
+## 14. Questions for the supervisor
 
-Ask the supervisor:
+1. Is the anonymous survey with short follow-up discussions an acceptable format? Asked on 21 Oct (Q-03); to be discussed on 23 Oct.
+2. Is any ethics or university approval needed for the survey and the discussions? On the agenda for 23 Oct.
+3. Does a senior medical student count as a respondent only with actual clinical or ward experience? Not asked yet.
+4. Can the supervisor suggest suitable respondents? Not asked yet.
+5. If fewer than three discussions can be completed, which other evidence is acceptable? Not asked yet.
 
-1. Is this short anonymous discussion format acceptable for the diploma?
-2. Is any additional ethics or university approval needed for these discussions?
-3. Does a senior medical student count only when they have actual clinical/ward experience?
-4. Can the supervisor suggest or introduce suitable respondents?
-5. If fewer than three valid discussions can be completed, which alternative form of relevance evidence is acceptable?
-
-Record the actual answers in the supervisor-feedback log without adding assumptions.
+Answers are recorded in the [feedback log](../11-feedback-log.md).
 
 ## 15. Timeline
 
 | Date | Action |
 |---|---|
-| 13–14 Oct | Send first outreach messages |
-| 13–20 Oct | Hold discussions and update the register immediately after each one |
-| 18–20 Oct | Follow up and contact additional respondents if fewer than 3 are complete |
-| 21 Oct | Write synthesis and map findings to requirements |
-| 22–23 Oct | Apply confirmed changes to proposal, requirements, and prototype |
+| 13–14 Oct | First outreach planned (not sent) |
+| 21 Oct | Survey created; outreach to 8–10 people with clinical experience |
+| 21 Oct | First 2 survey answers received; follow-up held with R2 ([user-evidence.md](user-evidence.md)) |
+| 22 Oct | Follow-up held with R1 |
+| 21–22 Oct | Collect survey answers and hold follow-up discussions; update the register after each one |
+| 22 Oct | Write synthesis and map findings to requirements (DIP-8) |
+| 23 Oct | Apply confirmed changes to requirements and prototype |
 
-If fewer than three valid discussions are obtained, record the true number and ask the supervisor which alternative evidence is acceptable. Do not create or pad responses.
+If fewer than three valid discussions are obtained, the actual number is reported and the supervisor is asked which other evidence is acceptable.
 
 ## 16. Completion criteria
 
@@ -192,8 +187,8 @@ This component is complete when:
 
 ## 17. Current open items
 
-- Respondents are not yet confirmed in this document.
-- The primary user remains a working definition until evidence is collected.
-- The concrete sepsis direction remains subject to supervisor review.
-- The ethics/approval procedure for the short discussions should be confirmed with the supervisor.
-- Requirement changes cannot be written until real evidence exists.
+- 2 discussions so far; at least one more is needed.
+- The primary user is supported by the first answers (AS-01), but on two respondents only.
+- The concrete sepsis direction remains subject to supervisor review (research justification, 23 Oct).
+- Whether the survey and the short discussions need any ethics or university approval has not been asked yet; it is on the agenda for the meeting on 23 Oct.
+- Proposed requirement changes ([user-evidence.md](user-evidence.md) §5) are applied after the meeting on 23 Oct.
