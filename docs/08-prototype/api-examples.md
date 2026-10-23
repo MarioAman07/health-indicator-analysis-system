@@ -1,8 +1,8 @@
 # API Examples
 
-**Status:** design draft (DIP-14) — the API is not implemented yet  
-**Last updated:** 21 Oct 2026  
-**Related:** [requirements](../06-requirements.md) · [architecture](../07-architecture/architecture.md)
+**Status:** design draft (DIP-14), alert endpoints added on 23 Oct 2026 (DIP-27) — the API is not implemented yet  
+**Last updated:** 23 Oct 2026  
+**Related:** [requirements](../06-requirements.md) · [architecture](../07-architecture/architecture.md) · [target system](../07-architecture/target-system.md)
 
 All values below are **illustrative**: they show the format of requests and responses, not real patients or model results.
 
@@ -20,6 +20,8 @@ All values below are **illustrative**: they show the format of requests and resp
 | `GET /api/v1/patients` | Demo patients with current risk and alert state | FR-08 |
 | `GET /api/v1/patients/{patient_id}/timeline` | Hourly measurements and risk of one patient | FR-09 |
 | `GET /api/v1/patients/{patient_id}/predictions` | Stored predictions of one patient | FR-12 |
+| `GET /api/v1/patients/{patient_id}/alerts` | Alerts of one patient with their acknowledgements | FR-20 |
+| `POST /api/v1/alerts/{alert_id}/ack` | Acknowledge an alert with an outcome | FR-20, NFR-10 |
 | `GET /api/v1/models/current` | Metadata of the model in use | FR-14 |
 
 ## POST /api/v1/predict
@@ -50,8 +52,12 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
   "risk_score": 0.74,
   "risk_level": "high",
   "threshold": 0.30,
+  "risk_percent": 74,
+  "risk_label": "High risk",
   "alert": true,
+  "alert_reason": "threshold",
   "alert_suppressed_until_hour": 45,
+  "prompt": "Re-check the measurements and inform the responsible physician.",
   "top_features": [
     {"feature": "Resp_last", "label": "Respiratory rate, last value", "value": 21.0, "contribution": 0.31},
     {"feature": "Temp_last", "label": "Temperature, last value", "value": 37.8, "contribution": 0.22},
@@ -59,11 +65,13 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
     {"feature": "HR_mean_6h", "label": "Heart rate, mean of last 6 h", "value": 90.2, "contribution": 0.09},
     {"feature": "O2Sat_last", "label": "Oxygen saturation, last value", "value": 95.2, "contribution": 0.05}
   ],
-  "hours_since_vitals": 0,
+  "hours_since_measurement": {"HR": 0, "O2Sat": 0, "Temp": 3, "SBP": 0, "MAP": 0, "Resp": 0},
   "model_version": "lgbm-v0.1.0",
   "disclaimer": "Research prototype — not a diagnosis."
 }
 ```
+
+`risk_label` is "Low risk", "Medium risk" or "High risk"; the dashboard shows it in green, yellow or red next to `risk_percent` (FR-08). `alert_reason` is `threshold` or `risk_rose` (FR-07). `prompt` is present only when `alert` is true and is always the same sentence (FR-19).
 
 ### Response 200 — insufficient data (FR-11)
 
@@ -76,7 +84,7 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
   "risk_level": null,
   "alert": false,
   "hours_since_vitals": 7,
-  "message": "Key vital signs have not been measured for more than 4 hours.",
+  "message": "Key vital signs have not been measured for more than 4 hours. Please measure the patient.",
   "model_version": "lgbm-v0.1.0",
   "disclaimer": "Research prototype — not a diagnosis."
 }
@@ -97,10 +105,13 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
 
 ```json
 [
-  {"patient_id": "demo-02", "icu_hour": 71, "risk_score": 0.97, "risk_level": "high", "alert": true, "hours_since_vitals": 0},
-  {"patient_id": "demo-05", "icu_hour": 53, "risk_score": null, "risk_level": null, "alert": false, "hours_since_vitals": 7}
+  {"patient_id": "demo-02", "icu_hour": 71, "risk_percent": 97, "risk_label": "High risk", "alert_status": "not_acknowledged", "hours_since_vitals": 0},
+  {"patient_id": "demo-07", "icu_hour": 22, "risk_percent": 41, "risk_label": "High risk", "alert_status": "acknowledged", "hours_since_vitals": 1},
+  {"patient_id": "demo-05", "icu_hour": 53, "risk_percent": null, "risk_label": null, "alert_status": null, "state": "insufficient_data", "hours_since_vitals": 7}
 ]
 ```
+
+The list comes already in the order of FR-08: alerts not acknowledged, acknowledged alerts, the other patients by risk, insufficient data last.
 
 ## GET /api/v1/patients/{patient_id}/timeline
 
@@ -122,6 +133,40 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
 ]
 ```
 
+## GET /api/v1/patients/{patient_id}/alerts
+
+```json
+[
+  {"alert_id": 118, "hour": 40, "reason": "threshold", "risk_percent": 74, "status": "acknowledged",
+   "acknowledgement": {"outcome": "physician_informed", "user_id": "nurse-03", "acknowledged_at": "2026-11-20T10:21:40Z"}},
+  {"alert_id": 121, "hour": 43, "reason": "risk_rose", "risk_percent": 88, "status": "open", "acknowledgement": null}
+]
+```
+
+## POST /api/v1/alerts/{alert_id}/ack
+
+### Request
+
+```json
+{"outcome": "physician_informed", "user_id": "nurse-03"}
+```
+
+`outcome` is one of `physician_informed`, `not_confirmed`, `already_treated` (FR-20).
+
+### Response 200
+
+```json
+{"alert_id": 121, "status": "acknowledged", "outcome": "physician_informed", "acknowledged_at": "2026-11-20T13:08:12Z"}
+```
+
+### Response 409 — already acknowledged
+
+```json
+{"detail": "Alert 121 was already acknowledged at 2026-11-20T13:08:12Z."}
+```
+
+An unknown outcome returns 422 in the same format as above (NFR-09). Every acknowledgement also writes an audit record (NFR-10).
+
 ## GET /api/v1/models/current
 
 ```json
@@ -132,7 +177,9 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
   "config_hash": "9f2c1e7",
   "threshold": 0.30,
   "suppression_hours": 6,
+  "realert_margin": 0.10,
   "insufficient_data_hours": 4,
+  "ack_limit_minutes": 30,
   "validation": {"auroc": 0.0, "auprc": 0.0},
   "library_versions": {"lightgbm": "4.5.0", "scikit-learn": "1.5.2"}
 }
@@ -152,3 +199,4 @@ Only measurements at hours ≤ `as_of_hour` are used (FR-02). Columns not sent a
 | `make evaluate` | Internal and external evaluation → report | planned (FR-04) |
 | `make api` | Start the backend: `uvicorn src.backend.main:app` | planned (FR-06) |
 | `make ui` | Start the dashboard connected to the API | planned (FR-08 – FR-13) |
+| `make replay` | Run the hourly cycle over the PhysioNet test patients with the replay adapter | planned (FR-21) |

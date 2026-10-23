@@ -1,25 +1,28 @@
 @startuml system-context
-' System context diagram (C4 level 1) — DIP-13
+' System context diagram (C4 level 1) — DIP-13, updated in DIP-27 (target data source, nurse and physician as separate users)
 ' Source of diagrams/export/system-context.png
 !include <C4/C4_Context>
 
-AddElementTag("outofscope", $borderStyle=DashedLine(), $fontColor="#777777", $bgColor="#f2f2f2", $borderColor="#999999")
-AddRelTag("outofscope", $lineStyle=DashedLine(), $textColor="#777777", $lineColor="#999999")
+AddElementTag("target", $borderStyle=DashedLine(), $fontColor="#555555", $bgColor="#f2f2f2", $borderColor="#777777")
+AddRelTag("target", $lineStyle=DashedLine(), $textColor="#555555", $lineColor="#777777")
 
 title System context: Health Indicator Analysis System
 
-Person(clinician, "ICU nurse / physician", "Primary user (supported by first user evidence). Reviews patients, trends, risk and alerts.")
-Person(researcher, "Researcher / ML engineer", "Secondary user. Trains and evaluates models, compares baselines.")
+Person(nurse, "ICU nurse", "Primary user. Watches several patients, sees alerts and their reasons, re-checks the patient and acknowledges the alert.")
+Person(physician, "ICU physician", "Assesses alerted patients under the national sepsis protocol; reviews trends and acknowledgements.")
+Person(researcher, "Researcher / ML engineer", "Trains and evaluates models, sets thresholds, monitors alert behaviour.")
 
-System(system, "Health Indicator Analysis System", "Research prototype. Estimates early sepsis risk from hourly ICU measurements and explains it.")
+System(system, "Health Indicator Analysis System", "Decision-support prototype. Every hour estimates early sepsis risk from ICU measurements, raises and explains alerts.")
 
-System_Ext(physionet, "PhysioNet/CinC Challenge 2019 data", "Public, de-identified hourly ICU records, sets A and B (CC BY 4.0).")
-System_Ext(his, "Hospital information system", "Out of scope: no live integration in this diploma.", $tags="outofscope")
+System_Ext(mis, "Hospital MIS and bedside monitors", "Target data source: charted vital signs, laboratory results, admissions. Designed, not connected in the diploma.", $tags="target")
+System_Ext(physionet, "PhysioNet/CinC Challenge 2019 data", "Data source in the diploma: public, de-identified ICU records replayed hour by hour.")
 
-Rel(clinician, system, "Views patient list, trends, risk, reasons and alerts", "Web dashboard")
-Rel(researcher, system, "Runs import, training and evaluation; reads reports", "CLI, dashboard, REST API")
-Rel(system, physionet, "Reads downloaded files", "PSV files")
-Rel(his, system, "Live patient data", "out of scope", $tags="outofscope")
+Rel(nurse, system, "Views patient list, alerts and reasons; acknowledges alerts", "Web dashboard")
+Rel(physician, system, "Reviews trends, reasons and acknowledgements", "Web dashboard")
+Rel(nurse, physician, "Informs about a confirmed change", "In person / phone")
+Rel(researcher, system, "Trains, evaluates, configures", "CLI, dashboard, REST API")
+Rel(mis, system, "Hourly vital signs, lab results, admissions", "HL7 v2 or MIS API (target)", $tags="target")
+Rel(system, physionet, "Replays downloaded files", "PSV files")
 
 SHOW_LEGEND()
 @enduml

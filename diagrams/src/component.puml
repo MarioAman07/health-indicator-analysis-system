@@ -1,7 +1,7 @@
 @startuml component
-' Component diagram (draft) — DIP-13
+' Component diagram (draft) — DIP-13, updated in DIP-27 (data-source adapter, hourly cycle, alert acknowledgement)
 ' Source of diagrams/export/component.png
-' Layers top to bottom: dashboard -> API -> core -> storage; the offline pipeline reuses the core.
+' Layers top to bottom: dashboard -> API -> core -> storage; the hourly cycle and the offline pipeline reuse the core.
 skinparam componentStyle rectangle
 skinparam defaultTextAlignment center
 skinparam nodesep 40
@@ -16,14 +16,22 @@ title Components (draft): Health Indicator Analysis System
 
 package "Dashboard (Streamlit)" as UI {
   [Patient list view] as V1
-  [Patient detail view] as V2
+  [Patient detail view\n(alerts, reasons,\nacknowledgement)] as V2
   [Model comparison view] as V3
 }
 
 package "Backend API (FastAPI)" as API {
   [Patients router\n/api/v1/patients] as R1
   [Prediction router\n/api/v1/predict] as R2
+  [Alerts router\n/api/v1/alerts] as R4
   [Models router\n/api/v1/models] as R3
+}
+
+package "Hourly cycle" as RUN {
+  [Scheduler] as SCH
+  [Data-source interface] as DSI
+  [Replay adapter\n(diploma)] as RA
+  [MIS adapter\n(target, not built)] as MA #EEEEEE
 }
 
 package "Offline pipeline (CLI / Makefile)" as OFF {
@@ -36,25 +44,34 @@ package "Core (Python package src/ml)" as CORE {
   [Data validation] as VAL
   [Feature builder\n(same code for training\nand inference)] as FB
   [Inference service] as INF
-  [Alert logic] as AL
+  [Alert logic\n(threshold, suppression,\nre-alert, insufficient data)] as AL
   [Explanation (SHAP)] as EXP
 }
 
-database "SQLite\ndemo patients, predictions,\nmodel versions" as DB
+database "SQLite\npatients, predictions, alerts,\nacknowledgements, audit,\nmodel versions" as DB
 folder "Model store\nmodel file + metadata" as MS
 folder "Dataset files\ndata/raw (not in Git)" as DS
 folder "Evaluation reports" as REP
 
 V1 --> R1 : HTTP/JSON
 V2 --> R1 : HTTP/JSON
-V2 --> R2 : HTTP/JSON
+V2 --> R4 : acknowledge
 V3 --> R3 : HTTP/JSON
 
 R1 --> DB
 R2 --> INF
 R2 --> DB : store prediction
+R4 --> DB : store acknowledgement
 R3 --> MS
 R3 --> REP : read
+
+SCH --> DSI : new values for hour t
+RA ..> DSI : implements
+MA ..> DSI : implements
+RA --> DS : read
+SCH --> VAL
+SCH --> INF : run hourly
+INF --> DB : store prediction, alert
 
 INF --> FB
 INF --> AL
@@ -63,7 +80,6 @@ INF --> MS : load model
 
 ING --> VAL
 ING --> DS : read
-ING --> DB : load demo patients
 TR --> FB
 TR --> MS : save model
 EV --> INF

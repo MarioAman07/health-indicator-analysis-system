@@ -1,7 +1,7 @@
 # Machine-Learning Methodology
 
 **Status:** draft for supervisor review (DIP-10)  
-**Last updated:** 21 Oct 2026  
+**Last updated:** 23 Oct 2026  
 **Related:** [proposal](../01-proposal.md) · [literature matrix](../03-literature/literature-matrix.md) · [technology comparison](technology-comparison.md) · [verification plan](../09-verification.md) · [data analysis](../02-evidence/data-analysis.md)
 
 This document fixes how the prediction task, data, models and evaluation are defined, and why. Literature references use the numbering of the literature matrix (#1–#12). Facts about the data come from the reproducible [data analysis](../02-evidence/data-analysis.md) (DIP-9), not from estimates.
@@ -122,8 +122,8 @@ A recurrent model (GRU/LSTM) works on raw sequences and is widely studied (#1), 
 ## 8. Operating point and alert logic
 
 - **Threshold.** Chosen on the validation set as the highest risk value at which hour-level sensitivity is still ≥ 0.80. A lower threshold would raise sensitivity further, at the cost of more false alerts. PPV at 80% sensitivity is also how #8 reports results, which makes the numbers comparable.
-- **Alert.** An alert fires when the risk crosses the threshold. A new alert for the same patient is suppressed for *N* hours (default 6, configurable). This follows the threshold and suppression strategies reported in #10 and addresses the alert burden shown in #6.
-- **Insufficient data.** If none of the key vital signs (`HR`, `O2Sat`, `Temp`, `SBP`, `MAP`, `Resp`) has been measured for more than *X* hours, the system shows "insufficient data" instead of a risk value. *X* is configurable; the data analysis gives a candidate of 4 h (only 0.23% of gaps between key vital-sign measurements are longer), and the default is decided after the meeting on 23 Oct. This adapts the idea of an indeterminate output from #7.
+- **Alert.** An alert fires when the risk crosses the threshold. After any alert, a new alert for the same patient is suppressed for *N* hours (default 6, configurable), unless the risk rises by a margin above the risk at the last alert (default 0.10, configurable; adopted on 23 Oct from the user evidence, FR-07). This follows the threshold and suppression strategies reported in #10 and addresses the alert burden shown in #6.
+- **Insufficient data.** If none of the key vital signs (`HR`, `O2Sat`, `Temp`, `SBP`, `MAP`, `Resp`) has been measured for more than *X* hours, the system shows "insufficient data" instead of a risk value. *X* is configurable; the default is 4 h (adopted on 23 Oct): only 0.23% of gaps between key vital-sign measurements are longer, and it lies within the 4–6 h named by R1. An ICU can set 1 h, as R2 suggested. This adapts the idea of an indeterminate output from #7.
 
 ## 9. Evaluation
 

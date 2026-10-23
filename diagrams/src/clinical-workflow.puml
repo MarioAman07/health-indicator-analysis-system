@@ -1,0 +1,62 @@
+@startuml clinical-workflow
+' Workflow with the system (target) — DIP-27
+' Source of diagrams/export/clinical-workflow.png
+' Described in docs/07-architecture/target-system.md, sections 4 and 5.
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+skinparam swimlane {
+  TitleFontStyle bold
+}
+
+title Workflow with the system (target)
+
+|Monitor and MIS|
+start
+:Vital signs charted every hour;\nlaboratory results released;
+|System|
+:Hourly cycle: read new values\n(MIS adapter; replay of PhysioNet in the diploma);
+:Validate values; build features\nfrom past hours only;
+if (Key vital sign recorded\nin the last 4 h?) then (no)
+  :State "insufficient data":\nno risk, no alert;\nthe nurse is asked to measure;
+  note left
+    The new measurement
+    is used at the next
+    hourly cycle.
+  end note
+else (yes)
+  |System|
+  :Compute risk and the five\nmost influential measurements;
+  if (Risk at or above threshold and not suppressed,\nor risk rose further since the last alert?) then (yes)
+    :Alert: patient moves to the top,\n"72% · High risk" in red, banner;
+    note right
+      Not acknowledged in 30 min:
+      marked "not acknowledged"
+      at the top of the list.
+    end note
+    |ICU nurse|
+    :Opens the patient view:\nreasons, trends, time since each measurement;
+    :Re-checks the patient at the bedside\nand repeats the measurements;
+    if (Change confirmed?) then (yes)
+      :Informs the responsible physician;
+      :Acknowledges: "physician informed";
+      |Physician|
+      :Assesses with the national sepsis protocol:\nqSOFA / SOFA, lactate, blood cultures;
+      :Decides on treatment\n(outside the system);
+    else (no)
+      |ICU nurse|
+      :Acknowledges: "change not confirmed"\n(kept as evidence of false alerts);
+    endif
+  else (no)
+    |System|
+    :Update list and trends;\nno alert;
+  endif
+endif
+|System|
+:Store prediction, alert, acknowledgement\nand audit record;
+stop
+@enduml

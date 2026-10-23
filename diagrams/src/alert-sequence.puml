@@ -1,0 +1,49 @@
+@startuml alert-sequence
+' Hourly cycle and the response to one alert — DIP-27
+' Source of diagrams/export/alert-sequence.png
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam sequence {
+  ParticipantBorderColor #444444
+  ParticipantBackgroundColor #FFFFFF
+  LifeLineBorderColor #999999
+}
+autonumber
+
+title Hourly cycle and the response to one alert
+
+participant "Data source\n(MIS adapter /\nreplay adapter)" as SRC
+participant "Scheduler" as SCH
+participant "Core\n(validation, features,\ninference, alert logic)" as CORE
+database "Database" as DB
+participant "API\n(FastAPI)" as API
+participant "Dashboard\n(Streamlit)" as UI
+actor "ICU nurse" as N
+actor "Physician" as P
+
+== Every hour ==
+SCH -> CORE : start cycle for hour t
+CORE -> SRC : new values since the last cycle
+SRC --> CORE : vital signs, laboratory results, admissions
+CORE -> CORE : validate values; check data freshness (4 h)
+CORE -> CORE : features from hours ≤ t; risk; five main reasons
+CORE -> CORE : alert rules: threshold, 6 h suppression,\nnew alert if the risk rose further
+CORE -> DB : store prediction, alert and audit record
+
+== Every minute ==
+UI -> API : GET /api/v1/patients
+API -> DB : read current state
+API --> UI : list with risk, level and alert flags
+UI -> N : banner "72% · High risk"; patient at the top
+
+== Response to the alert ==
+N -> UI : open the patient
+UI -> API : GET /api/v1/patients/{id}/timeline
+API --> UI : trends, reasons, time since each measurement
+N -> N : re-check the patient at the bedside
+N -> P : inform (in person or by phone)
+N -> UI : acknowledge "physician informed"
+UI -> API : POST /api/v1/alerts/{id}/ack
+API -> DB : store outcome, time and user
+P -> P : assess with the national sepsis protocol
+@enduml
