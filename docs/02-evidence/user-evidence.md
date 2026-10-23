@@ -1,10 +1,11 @@
 # User Evidence: Results
 
 **Status:** Collection in progress. 2 respondents so far, both with a survey answer and a follow-up exchange, so 2 discussions. The target is 3–5 discussions ([evidence plan](evidence-plan.md) §1).  
-**Last updated:** 22 Oct 2026  
-**Method:** [evidence plan](evidence-plan.md) §4 — anonymous Google Forms survey, followed by a round of follow-up questions in a messenger.
+**Last updated:** 23 Oct 2026  
+**Method:** [evidence plan](evidence-plan.md) §4 — anonymous Google Forms survey, followed by a round of follow-up questions in a messenger.  
+**Full answers:** [transcripts.md](transcripts.md) (original Russian text with an English translation).
 
-All findings are paraphrased in my own words. Names, contacts, chat screenshots and the raw answer table are kept privately and are not committed. They can be shown to the supervisor on request.
+The findings below are paraphrased in my own words; the full anonymised answers are in [transcripts.md](transcripts.md). Names, contacts, chat screenshots and the raw answer table are kept privately and are not committed.
 
 ## 1. Respondents
 
@@ -27,7 +28,7 @@ The survey ran without the page with the prototype screen (questions 14–15), b
 | EV-06 | Alerts can be missed or ignored under high workload, staff shortage and frequent false alarms (R1, general opinion). In R2's unit alerts are not ignored. | R1 (Q9–10), R2 (Q10) | AS-04, FR-07 |
 | EV-07 | A risk number alone is not enough. Users want to see why the risk rose: which measurements changed (for example, falling oxygen saturation or changes in pulse and blood pressure), when they were measured, and the clinical dynamics. | R1 (Q11, follow-up 5), R2 (Q11) | AS-03, AS-05, FR-09, FR-10 |
 | EV-08 | Features chosen as useful by both respondents: which measurements influenced the risk, a warning when data are missing or out of date, and a patient list sorted by risk. R2 also chose charts over time and a limit on repeated alerts. | R1, R2 (Q12) | FR-08 – FR-11, FR-07 |
-| EV-09 | How to show the risk. R2 finds a percentage clearest. R1 prefers a colour together with a short label, for example "High risk" in red, because it is faster to read under workload. | R2 (follow-up 3), R1 (follow-up 3) | Dashboard, FR-06 |
+| EV-09 | How to show the risk. R2 finds a percentage clearest. R1 prefers a colour together with a short label, for example "High risk" in red, because it is faster to read under workload. | R2 (follow-up 3), R1 (follow-up 3) | Dashboard, FR-08 |
 | EV-10 | Repeated alerts. R1: identical notifications should not be repeated constantly; repeat when the problem persists or the patient's state changes, and repeat at once in a dangerous situation. R2: alert on every change (but also ticked "limit on how often alerts repeat" in the survey). Both support a new alert when the state changes. | R1 (follow-up 2), R2 (follow-up 2, Q12) | AS-04, FR-07 |
 | EV-11 | Reasons to distrust a tool: frequent errors, unclear results, data not updated in time, high risk without explanation. The tool must be simple and fast, staff need training, and it must not replace professional judgement. | R1 (Q13, final question) | NFR-06, NFR-07, FR-10, FR-11 |
 | EV-12 | R1 would like the system to suggest what to do next. In the follow-up she specified: highlight the changed values and prompt to re-check them and to inform the responsible medical worker. | R1 (Q11, follow-up 5) | FR-18 (Won't), FR-10 |
@@ -64,7 +65,7 @@ These statuses rest on two people, one of whom works on a ward rather than in th
   - Re-alert when the risk rises further instead of only after a fixed window (EV-10).
   - Show when each measurement was taken (EV-07).
   - Help at shift handover with recent changes and a list of patients to watch (EV-14).
-- **Kept out of scope.** Treatment and medication recommendations stay out of scope (FR-18, C-04). R1's request (EV-12) is limited to highlighting changed values and prompting to re-check and inform the responsible clinician. A fixed, non-clinical prompt of this kind fits the scope; whether to add it is decided after 23 Oct.
+- **Kept out of scope.** Treatment and medication recommendations stay out of scope (FR-18, C-04). R1's request (EV-12) is limited to highlighting changed values and prompting to re-check and inform the responsible clinician. A fixed, non-clinical prompt of this kind fits the scope and was adopted on 23 Oct (§5).
 - **Still uncertain.**
   - Whether users understand the patient screen (user check not done).
   - Whether the findings hold for an ICU nurse and for more respondents.
@@ -77,14 +78,14 @@ These statuses rest on two people, one of whom works on a ward rather than in th
 | EV-03, EV-04, EV-08, EV-14 | FR-08 patient list | Keep (patients with an active alert first, then by risk) |
 | EV-07, EV-08, EV-13, EV-14 | FR-09 trends with the five vital signs | Keep; no extra signals needed |
 | EV-07, EV-08, EV-11 | FR-10 contributing measurements | Keep |
-| EV-02, EV-08, EV-11 | FR-11 insufficient-data state | Keep configurable. **Proposed:** default 4 h (data analysis; within R1's 4–6 h); R2 suggests 1 h for the ICU — decide on 23 Oct |
-| EV-06, EV-10 | FR-07 alert suppression | Keep the suppression window. **Proposed:** allow a new alert inside the window when the risk rises further — decide on 23 Oct |
-| EV-09 | FR-06 / dashboard | **Proposed:** show the risk as a percentage with a colour-coded level label (the API keeps a value in [0, 1] and the level) |
-| EV-07 | FR-09 | **Proposed:** show the time since the last measurement next to each vital sign |
-| EV-12 | FR-18 (Won't), FR-10 | No treatment advice. **Proposed:** a fixed prompt "re-check the measurements and inform the responsible clinician" next to an alert |
+| EV-02, EV-08, EV-11 | FR-11 insufficient-data state | Keep configurable. **Adopted 23 Oct:** default 4 h (data analysis; within R1's 4–6 h). R2's 1 h for the ICU stays possible as a setting |
+| EV-06, EV-10 | FR-07 alert suppression | Keep the suppression window. **Adopted 23 Oct:** a new alert inside the window when the risk rises further (FR-07) |
+| EV-09 | FR-08 / dashboard | **Adopted 23 Oct:** risk shown as a percentage together with a colour-coded level label (FR-08); the API keeps a value in [0, 1] and the level |
+| EV-07 | FR-09 | **Adopted 23 Oct:** time since the last measurement next to each vital sign (FR-09) |
+| EV-12 | FR-18 (Won't), FR-10 | No treatment advice. **Adopted 23 Oct:** a fixed prompt "re-check the measurements and inform the responsible clinician" next to an alert (FR-19) |
 | EV-05, EV-11 | NFR-06, C-04 | Keep: "research prototype — not a diagnosis" on every screen |
 
-Proposed changes are applied after the meeting with the supervisor on 23 Oct ([evidence plan](evidence-plan.md) §15).
+The five proposals were presented at the meeting with the supervisor on 23 Oct and adopted by me the same day; they are recorded in the [requirements](../06-requirements.md) and the [target system description](../07-architecture/target-system.md).
 
 ## 6. Next steps
 
