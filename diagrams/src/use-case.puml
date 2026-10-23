@@ -1,5 +1,5 @@
 @startuml use-case
-' Use case diagram — DIP-13
+' Use case diagram — DIP-13, updated in DIP-27 (nurse and physician as separate actors, alert acknowledgement)
 ' Source of diagrams/export/use-case.png
 left to right direction
 skinparam packageStyle rectangle
@@ -11,24 +11,31 @@ skinparam actorStyle awesome
 
 title Use cases: Health Indicator Analysis System
 
-actor "ICU nurse /\nphysician" as Clinician
+actor "ICU nurse" as Nurse
+actor "ICU physician" as Physician
 actor "Researcher /\nML engineer" as Researcher
 
 rectangle "Health Indicator Analysis System" {
-  usecase "UC-01 View patient list\nsorted by risk\n(FR-08)" as UC1
+  usecase "UC-01 View patient list\nsorted by urgency\n(FR-08)" as UC1
   usecase "UC-02 View patient trends\nand risk over time\n(FR-09)" as UC2
   usecase "UC-03 See why the risk\nis high\n(FR-10)" as UC3
-  usecase "UC-04 See alerts and\ndata-quality warnings\n(FR-07, FR-11)" as UC4
-  usecase "UC-05 Import and validate\npatient data\n(FR-01)" as UC5
+  usecase "UC-04 See alerts and\ndata-quality warnings\n(FR-07, FR-11, FR-19)" as UC4
+  usecase "UC-10 Acknowledge an alert\nwith an outcome\n(FR-20)" as UC10
+  usecase "UC-11 Review alert history\nand acknowledgements\n(FR-20)" as UC11
+  usecase "UC-05 Import and validate\npatient data\n(FR-01, FR-21)" as UC5
   usecase "UC-06 Train baselines\nand main model\n(FR-02, FR-03, FR-05)" as UC6
   usecase "UC-07 Evaluate and\ncompare models\n(FR-04, FR-13)" as UC7
-  usecase "UC-08 Configure threshold\nand suppression window\n(FR-07)" as UC8
+  usecase "UC-08 Configure threshold,\nsuppression and data limit\n(FR-07, FR-11)" as UC8
   usecase "UC-09 Request risk and\nmodel info via API\n(FR-06, FR-14)" as UC9
 }
 
-Clinician --> UC1
-Clinician --> UC2
-Clinician --> UC4
+Nurse --> UC1
+Nurse --> UC2
+Nurse --> UC4
+Nurse --> UC10
+Physician --> UC1
+Physician --> UC2
+Physician --> UC11
 Researcher --> UC5
 Researcher --> UC6
 Researcher --> UC7

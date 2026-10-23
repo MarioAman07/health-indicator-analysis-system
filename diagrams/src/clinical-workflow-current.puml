@@ -1,0 +1,46 @@
+@startuml clinical-workflow-current
+' Current ICU workflow without the system — DIP-27
+' Source of diagrams/export/clinical-workflow-current.png
+' Based on MoH Order No. 78 (2023), the national sepsis protocol (2020) and respondents R1, R2 (transcripts.md).
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+skinparam swimlane {
+  TitleFontStyle bold
+}
+
+title Current workflow in an ICU (without the system)
+
+|Bedside monitor|
+start
+:Measures vital signs continuously;
+|ICU nurse|
+:Reads the monitor and charts values\n(ICU: every hour; ward: every 4–8 h);
+:Watches several patients\n(about one nurse per two ICU beds);
+if (Notices a change?) then (yes)
+  :Checks the patient:\nconsciousness, vital signs;
+  if (Significant?) then (yes)
+    :Informs the physician;
+    |Physician|
+    :Assesses with the national sepsis protocol\n(qSOFA / SOFA);
+    :Lactate and blood cultures within 1.5 h,\nfluids, antibiotics, source control;
+  else (no)
+    |ICU nurse|
+    :Continues routine observation;
+  endif
+else (no / missed)
+  |ICU nurse|
+  :Change not recognised in time;
+  note right
+    Weak points named by both respondents:
+    early signs taken as minor, changes lost
+    at handover or at night, many patients,
+    physician not available at once.
+  end note
+endif
+stop
+@enduml

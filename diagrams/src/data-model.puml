@@ -1,0 +1,94 @@
+@startuml data-model
+' Data model (entity–relationship diagram) of the system — DIP-27
+' Source of diagrams/export/data-model.png. Stored in SQLite in the diploma, PostgreSQL in the target hospital.
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam linetype ortho
+hide circle
+
+title Data model of the system (entity–relationship)
+
+entity "Patient" as PAT {
+  * patient_id : text
+  --
+  source : text  <<MIS / PhysioNet set A or B>>
+  age : number
+  gender : integer
+  icu_admitted_at : datetime
+}
+
+entity "Measurement" as MEA {
+  * patient_id : text <<FK>>
+  * hour : integer  <<hours since ICU admission (ICULOS)>>
+  --
+  HR, O2Sat, Temp, SBP, MAP, DBP, Resp : number
+  26 laboratory values : number
+  received_at : datetime
+}
+
+entity "ModelVersion" as MOD {
+  * version : text
+  --
+  model_type : text
+  trained_at : datetime
+  config_hash : text
+  threshold : number
+  validation_metrics : json
+}
+
+entity "Prediction" as PRE {
+  * prediction_id : integer
+  --
+  patient_id : text <<FK>>
+  hour : integer
+  state : text  <<ok / insufficient_data>>
+  risk_score : number  <<0..1, null if insufficient_data>>
+  risk_level : text  <<low / medium / high>>
+  top_features : json
+  model_version : text <<FK>>
+  created_at : datetime
+}
+
+entity "Alert" as ALE {
+  * alert_id : integer
+  --
+  prediction_id : integer <<FK>>
+  patient_id : text <<FK>>
+  reason : text  <<threshold / risk rose further>>
+  suppressed_until_hour : integer
+  status : text  <<open / acknowledged / not_acknowledged>>
+  created_at : datetime
+}
+
+entity "Acknowledgement" as ACK {
+  * ack_id : integer
+  --
+  alert_id : integer <<FK>>
+  user_id : text <<FK>>
+  outcome : text  <<physician informed /\nnot confirmed / already treated>>
+  acknowledged_at : datetime
+}
+
+entity "User" as USR {
+  * user_id : text
+  --
+  role : text  <<nurse / physician / admin>>
+}
+
+entity "AuditRecord" as AUD {
+  * audit_id : integer
+  --
+  user_id : text <<FK>>
+  action : text  <<view patient / acknowledge / change setting>>
+  patient_id : text
+  at : datetime
+}
+
+PAT ||--o{ MEA : has hourly
+PAT ||--o{ PRE : has
+MOD ||--o{ PRE : produced by
+PRE ||--o| ALE : may raise
+ALE ||--o| ACK : closed by
+USR ||--o{ ACK : gives
+USR ||--o{ AUD : performs
+@enduml

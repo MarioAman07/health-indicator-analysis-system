@@ -1,0 +1,61 @@
+@startuml deployment
+' Deployment: target hospital and the diploma — DIP-27
+' Source of diagrams/export/deployment.png
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam node {
+  BorderColor #444444
+  BackgroundColor #FFFFFF
+}
+
+title Deployment: target hospital (left) and the diploma (right)
+
+node "Hospital network in Kazakhstan (target)" as H {
+  node "ICU bed" as BED {
+    artifact "Bedside monitor" as MON
+  }
+  node "Hospital MIS\n(for example, Damumed)" as MIS {
+    artifact "Electronic medical record" as EMR
+    artifact "Laboratory module" as LAB
+  }
+  node "Application server (on-premises)" as APP {
+    component "MIS adapter\nHL7 v2 (ADT, ORU) or MIS API" as AD
+    component "Scheduler\n(hourly cycle)" as SC
+    component "Backend\nFastAPI + core + model" as BE
+    component "Dashboard server\n(Streamlit)" as DS
+    database "PostgreSQL" as PG
+  }
+  node "Nurse station /\nphysicians' room" as WS {
+    artifact "Web browser" as BR
+  }
+}
+
+MON --> EMR : charted values\n(device link or nurse entry)
+LAB --> EMR : results
+EMR --> AD : HL7 v2 / API
+AD --> BE : new values
+SC --> BE : start cycle
+BE --> PG : predictions, alerts,\nacknowledgements, audit
+DS --> BE : REST/JSON
+BR --> DS : HTTPS, login with roles
+
+node "Developer laptop (diploma)" as L {
+  folder "PhysioNet files\n(data/raw, not in Git)" as PF
+  component "Replay adapter\n(releases rows with ICULOS ≤ t)" as RA
+  component "Scheduler" as SC2
+  component "Backend\nFastAPI + core + model" as BE2
+  component "Dashboard\n(Streamlit)" as DS2
+  database "SQLite" as SQ
+  artifact "Web browser" as BR2
+}
+
+PF --> RA : read
+RA --> BE2 : new values
+SC2 --> BE2 : start cycle
+BE2 --> SQ
+DS2 --> BE2 : REST/JSON
+BR2 --> DS2 : HTTP (localhost)
+
+APP -[hidden]down- L
+@enduml
