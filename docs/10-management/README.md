@@ -1,7 +1,7 @@
 # Project Management
 
-**Status:** initial version (DIP-16)  
-**Last updated:** 21 Oct 2026
+**Status:** initial version (DIP-16), dependencies updated after the supervisor meeting of 23 Oct 2026  
+**Last updated:** 23 Oct 2026
 
 | | |
 |---|---|
@@ -25,7 +25,7 @@ The project is individual.
 1. Every meaningful work item is a YouTrack task with assignee, priority, due date, expected outcome and acceptance criteria.
 2. Board columns: Backlog → To do → In progress → Review → Done.
 3. Each task gets its own branch from `main`, named `DIP-<n>-<short-name>`; commits start with `DIP-<n>:`.
-4. Changes reach `main` only through a pull request that names the task, explains the change and says how it was checked; branch protection on `main` enforces this (set up in DIP-6).
+4. Changes reach `main` only through a pull request that names the task, explains the change and says how it was checked (`main` is protected).
 5. After merge, the task gets a comment with the pull-request link; it moves to Done only when its acceptance criteria are met.
 6. Each pre-defense submission is tagged (`pre-defense-1`, `pre-defense-2`, `final-pre-defense`); tags are never moved.
 
@@ -41,4 +41,7 @@ The project is individual.
 | Verification plan (DIP-15) | Requirements, ML methodology | Every Must requirement needs a test; metrics come from the methodology |
 | Evidence synthesis (DIP-8) | User discussions (DIP-4) | — |
 | Report (DIP-21) | All components 1–11 | — |
+| Target system and ICU workflow (DIP-27) | Transcripts (DIP-26); national ICU standard and sepsis protocol | The workflow and the alert path are built on what the respondents and the regulations describe |
+| Prototype update (DIP-30) | Requirements changed in DIP-27 | The screens show the adopted changes and the acknowledgement |
+| Report v2 (DIP-29) | DIP-26, DIP-27, DIP-28, DIP-30 | The report summarises these documents |
 | Implementation phases | Approved pre-defense 1 materials | The design must be agreed before coding starts |
