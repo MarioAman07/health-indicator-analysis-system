@@ -1,0 +1,38 @@
+@startuml chartwatch-architecture
+' CHARTwatch deployment, reconstructed from the published description (Pou-Prom et al., Front Digit Health 2022) — DIP-28
+' Source of diagrams/export/chartwatch-architecture.png. Not an official diagram of the system.
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam componentStyle rectangle
+
+title CHARTwatch (St. Michael's Hospital, Toronto): deployment as described in the publication
+
+node "Hospital" as H {
+  database "Hospital source databases\n(census, laboratory results,\nvital signs, demographics)" as SRC
+  database "Enterprise data warehouse\n(historical data for training)" as EDW
+  node "Local server" as SRV {
+    [Hourly pipeline in R:\nextract → clean → 6 h windows →\nMARS model → risk group] as P
+    [Monitoring: AUC, PPV, alerts per day,\nrun time, uptime; failure e-mails] as MON
+  }
+  [Pager app (SPOK)\non team phones] as PG
+  [Electronic sign-out tool\n(built in-house)] as SO
+  [E-mail] as EM
+}
+
+actor "GIM team\n(mostly residents)" as T
+actor "Charge nurse" as CN
+actor "Palliative care team" as PC
+
+SRC --> P : hourly extract
+EDW ..> P : training data
+P --> PG : high-risk alerts\n(no repeat for 48 h)
+PG --> T
+PG --> CN
+P --> SO : risk groups, hourly
+SO --> T
+P --> EM : census with risk groups,\ntwice a day; new high-risk patients, daily
+EM --> CN
+EM --> PC
+P --> MON
+@enduml
