@@ -1,0 +1,38 @@
+@startuml composer-architecture
+' COMPOSER deployment, reconstructed from the published description (Boussina et al., npj Digit Med 2024) — DIP-28
+' Source of diagrams/export/composer-architecture.png. Not an official diagram of the system.
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam componentStyle rectangle
+
+title COMPOSER (UC San Diego Health): deployment as described in the publication
+
+node "Hospital (two emergency departments)" as H {
+  node "Epic EHR" as EHR {
+    [Patient record:\nvital signs, laboratory results,\nother routine clinical data] as REC
+    [Best Practice Advisory\nshown to the nurse\n(with the top contributing features)] as BPA
+  }
+  [ADT feed\n(admissions, transfers)] as ADT
+}
+
+cloud "Cloud platform (AWS)" as AWS {
+  [Hourly data extraction\nFHIR API with OAuth 2.0] as EXT
+  [COMPOSER model\n(deep model with an\n"indeterminate" output)] as M
+  [Write-back\nHL7 v2 message] as WB
+  [Monitoring of data quality\nand model performance] as MON
+}
+
+actor "ED nurse" as N
+actor "Physician" as P
+
+ADT --> EXT : which patients\nare present
+REC --> EXT : clinical data
+EXT --> M
+M --> WB : risk score
+WB --> REC : score into the record
+REC --> BPA : score above threshold
+BPA --> N : alert
+N --> P : notify (option in the alert;\nsecure chat or in person)
+M --> MON
+@enduml

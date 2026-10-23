@@ -1,0 +1,27 @@
+@startuml trews-architecture
+' TREWS workflow, reconstructed from Adams et al. (Nat Med 2022) and the TREWS adoption study (Henry et al., medRxiv 2021) — DIP-28
+' Source of diagrams/export/trews-architecture.png. Not an official diagram of the system.
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam componentStyle rectangle
+
+title TREWS (five hospitals): data flow and alert workflow as described in the publications
+
+node "Hospital EHR" as EHR {
+  [Patient data: laboratory results, vital signs,\nnotes, medication and procedure history] as D
+  [Patient list with a TREWS icon\n(passive flag, no pop-up)] as L
+  [TREWS page in the patient chart:\nfactors that triggered the alert,\nsepsis and mortality probability,\nstatus of sepsis treatment] as W
+}
+
+[TREWS model\n(where it runs is not described\nin the sources reviewed)] as M
+
+actor "Nurse" as N
+actor "Physician or\nadvanced practice provider" as P
+
+D --> M
+M --> L : flag patient
+L --> W : click the icon
+N --> L : pre-screen; escalate to provider
+P --> W : evaluate: confirm or dismiss\n("timely" = within 3 h of the alert)
+@enduml

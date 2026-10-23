@@ -1,7 +1,8 @@
 # Existing System Comparison
 
-**Status:** revised for pre-defense 1 (DIP-18)  
-**Last updated:** 21 Oct 2026
+**Status:** revised for pre-defense 1 (DIP-18); architectures added in a separate document on 23 Oct 2026 (DIP-28)  
+**Last updated:** 23 Oct 2026  
+**Related:** [how the systems are built](system-architectures.md) · [literature matrix](../03-literature/literature-matrix.md)
 
 ## 1. What I compared and why
 
@@ -22,6 +23,8 @@ Not counted as systems, but used elsewhere in the project:
 - **Open-source Challenge 2019 entries.** After the PhysioNet/CinC Challenge 2019 all participant software was posted publicly (91 archives on the [dataset page](https://physionet.org/content/challenge-2019/1.0.0/sources/)). This is research code for the prediction task, not a system with users, alerts and an interface, so it is discussed in §4 rather than compared as a system.
 
 **Sources and their strength.** Source IDs `LIT-#` refer to the [literature matrix](../03-literature/literature-matrix.md), whose full texts I reviewed. `S-#` are other peer-reviewed sources listed in §5, used through their abstracts or published summaries. Press articles are not used as evidence. Where a source does not report something, the cell says "not reported".
+
+How four of these systems are built — where the data come from, where the model runs and how the alert reaches the staff — is described in [system-architectures.md](system-architectures.md), with a reconstructed architecture diagram for each.
 
 ## 2. Comparison table
 

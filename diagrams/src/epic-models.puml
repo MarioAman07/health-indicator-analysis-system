@@ -1,0 +1,33 @@
+@startuml epic-models
+' Epic Sepsis Model and Epic Deterioration Index, from independent publications (Wong 2021; Gallo 2024) — DIP-28
+' Source of diagrams/export/epic-models.png. The vendor has not published the internal architecture.
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam componentStyle rectangle
+
+title Epic Sepsis Model and Epic Deterioration Index: what is publicly known
+
+node "Epic EHR (vendor system, closed)" as EPIC {
+  [Patient record] as REC
+  [Epic Sepsis Model\npenalized logistic regression\n(inputs not published)] as ESM
+  [Epic Deterioration Index\nordinal logistic regression,\n31 measures, every 15 min] as EDI
+  [Alert in the EHR\n(EDI at threshold 65)] as AL
+}
+
+actor "Nurse" as N
+actor "Physician" as P
+
+REC --> ESM
+REC --> EDI
+EDI --> AL
+AL --> N
+AL --> P
+N <--> P : structured huddle\nand checklist (study site)
+
+note bottom of EPIC
+  Internal architecture, data model and update
+  schedule of the Sepsis Model are not public.
+  Independent validation: AUC 0.63 (Wong 2021).
+end note
+@enduml
