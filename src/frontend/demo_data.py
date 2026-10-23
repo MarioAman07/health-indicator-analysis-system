@@ -2,7 +2,7 @@
 
 Everything in this module is generated. It is NOT patient data and NOT the output of a
 trained model. It only shows how the dashboard will present real results later, and it
-uses the same alert rules that the real system will use (FR-07, FR-11).
+uses the same alert rules that the real system will use (FR-07, FR-08, FR-09, FR-11, FR-19).
 """
 from __future__ import annotations
 
@@ -21,7 +21,22 @@ VITALS = {
 # Prototype settings. Real values come from validation data and the configuration file.
 THRESHOLD = 0.30            # alert threshold (chosen on validation data in the real system)
 SUPPRESSION_HOURS = 6       # no repeated alert for the same patient within this window
-INSUFFICIENT_DATA_HOURS = 4 # vital signs older than this -> "insufficient data"
+REALERT_MARGIN = 0.10       # ...unless the risk rises this much above the risk at the last alert (FR-07)
+INSUFFICIENT_DATA_HOURS = 4 # vital signs older than this -> "insufficient data" (FR-11)
+ACK_LIMIT_MINUTES = 30      # an alert not acknowledged within this time is marked "not acknowledged" (FR-20)
+
+# The only advice text in the system (FR-19).
+PROMPT = "Re-check the measurements and inform the responsible physician."
+
+# Acknowledgement outcomes (FR-20): stored value -> text shown to the nurse
+ACK_OUTCOMES = {
+    "physician_informed": "Re-checked, physician informed",
+    "not_confirmed": "Re-checked, change not confirmed",
+    "already_treated": "Already known and being treated",
+}
+
+# One synthetic acknowledgement, so that the patient list shows every alert state (FR-20).
+DEMO_ACKS = {("demo-04", 62): "physician_informed"}
 
 # id, length of stay in hours, scenario
 PATIENTS = [
@@ -91,14 +106,30 @@ def demo_cohort() -> dict[str, pd.DataFrame]:
     return {pid: make_patient(pid, hours, scenario, seed=i) for i, (pid, hours, scenario) in enumerate(PATIENTS)}
 
 
+def alerts_raised(risk: pd.Series, hours: pd.Series, threshold: float = THRESHOLD,
+                  suppression: int = SUPPRESSION_HOURS, margin: float = REALERT_MARGIN) -> list[dict]:
+    """Alerts by the rules of FR-07.
+
+    An alert fires when the risk reaches the threshold and no alert was raised for the patient in
+    the previous `suppression` hours. Inside that window a new alert fires only if the risk has
+    risen by at least `margin` above the risk at the last alert; it starts a new window.
+    """
+    alerts: list[dict] = []
+    for h, r in zip(hours, risk):
+        if pd.isna(r) or r < threshold:
+            continue
+        h, r = int(h), float(r)
+        if not alerts or h - alerts[-1]["hour"] >= suppression:
+            alerts.append({"hour": h, "risk": r, "reason": "threshold"})
+        elif r >= alerts[-1]["risk"] + margin - 1e-9:
+            alerts.append({"hour": h, "risk": r, "reason": "risk_rose"})
+    return alerts
+
+
 def alert_hours(risk: pd.Series, hours: pd.Series, threshold: float = THRESHOLD,
                 suppression: int = SUPPRESSION_HOURS) -> list[int]:
-    """Hours at which an alert fires: risk >= threshold, no alert in the previous window (FR-07)."""
-    alerts: list[int] = []
-    for h, r in zip(hours, risk):
-        if pd.notna(r) and r >= threshold and (not alerts or h - alerts[-1] >= suppression):
-            alerts.append(int(h))
-    return alerts
+    """Hours at which an alert fires (FR-07)."""
+    return [a["hour"] for a in alerts_raised(risk, hours, threshold, suppression)]
 
 
 def hours_since_vitals(df: pd.DataFrame, hour: int) -> int | None:
@@ -110,18 +141,39 @@ def hours_since_vitals(df: pd.DataFrame, hour: int) -> int | None:
     return int(hour - measured["hour"].max())
 
 
+def last_measurements(df: pd.DataFrame, hour: int) -> list[dict]:
+    """Last value of each vital sign up to `hour` and how many hours ago it was measured (FR-09)."""
+    past = df[df["hour"] <= hour]
+    out = []
+    for v, (label, unit) in VITALS.items():
+        measured = past[past[v].notna()]
+        if measured.empty:
+            out.append({"vital": v, "label": label, "unit": unit, "value": None, "hours_ago": None})
+        else:
+            last = measured.iloc[-1]
+            out.append({"vital": v, "label": label, "unit": unit, "value": float(last[v]),
+                        "hours_ago": int(hour - last["hour"])})
+    return out
+
+
+def risk_level(risk: float) -> str:
+    """Level label shown next to the percentage (FR-08)."""
+    return "High" if risk >= THRESHOLD else ("Medium" if risk >= THRESHOLD / 2 else "Low")
+
+
 def status_at(df: pd.DataFrame, hour: int) -> dict:
     """Risk, level, alert and data state at a given hour, as the API will return it."""
     row = df[df["hour"] == hour].iloc[0]
     since = hours_since_vitals(df, hour)
-    alerts = alert_hours(df.loc[df["hour"] <= hour, "risk"], df.loc[df["hour"] <= hour, "hour"])
+    alerts = alerts_raised(df.loc[df["hour"] <= hour, "risk"], df.loc[df["hour"] <= hour, "hour"])
     if since is None or since > INSUFFICIENT_DATA_HOURS:
-        return {"risk": None, "level": "Insufficient data", "alert": False,
-                "hours_since_vitals": since, "alerts": alerts}
+        return {"risk": None, "percent": None, "level": "Insufficient data", "alert": False,
+                "current_alert": None, "hours_since_vitals": since, "alerts": alerts}
     risk = float(row["risk"])
-    level = "High" if risk >= THRESHOLD else ("Medium" if risk >= THRESHOLD / 2 else "Low")
-    active = bool(alerts) and hour - alerts[-1] < SUPPRESSION_HOURS
-    return {"risk": risk, "level": level, "alert": active, "hours_since_vitals": since, "alerts": alerts}
+    current = alerts[-1] if alerts and hour - alerts[-1]["hour"] < SUPPRESSION_HOURS else None
+    return {"risk": risk, "percent": int(round(risk * 100)), "level": risk_level(risk),
+            "alert": current is not None, "current_alert": current,
+            "hours_since_vitals": since, "alerts": alerts}
 
 
 def contributions(df: pd.DataFrame, hour: int, top: int = 5) -> pd.DataFrame:
