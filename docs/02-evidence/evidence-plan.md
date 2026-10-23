@@ -1,6 +1,6 @@
 # Evidence of Relevance
 
-**Status:** Collection in progress since 21 Oct 2026 (anonymous survey plus follow-up discussions). No response is entered as evidence until it has actually been received. Results so far: [user-evidence.md](user-evidence.md) — 2 respondents, both with a survey answer and a follow-up exchange (2 discussions). Data analysis: [data-analysis.md](data-analysis.md).
+**Status:** Collection in progress since 21 Oct 2026 (anonymous survey plus follow-up discussions). No response is entered as evidence until it has actually been received. Results so far: [user-evidence.md](user-evidence.md) — 2 respondents, both with a survey answer and a follow-up exchange (2 discussions); their full anonymised answers are in [transcripts.md](transcripts.md) (added on 23 Oct at the supervisor's request, FB-15). Data analysis: [data-analysis.md](data-analysis.md).
 
 ## 1. Purpose
 
@@ -60,14 +60,18 @@ After each discussion, record only:
 - anonymous respondent ID;
 - general role and relevant experience;
 - method;
-- paraphrased findings;
+- the full answers as a transcript (original language and translation), if the respondent agrees to publication; otherwise paraphrased findings;
 - which assumption or requirement the finding affects.
+
+Until 23 Oct only paraphrased findings were recorded. After the supervisor asked for transcripts (FB-15), both respondents were asked again and agreed to the publication of their anonymised answers in full.
 
 Names, phone numbers, usernames, private chat screenshots, and patient data must not be committed to the repository.
 
 ## 5. Introductory statement
 
-> I am collecting short anonymous feedback for my university diploma project about how clinical staff monitor patient condition. I do not need any patient information. I will only keep a short summary in my own words and your general role. You can skip any question or stop at any time.
+> I am collecting short anonymous feedback for my university diploma project about how clinical staff monitor patient condition. I do not need any patient information. Your answers may be published in the project without your name or contacts, together with your general role. You can skip any question or stop at any time.
+
+This wording is used from 23 Oct 2026. Before that date the statement promised only a short summary, so the first two respondents were asked separately before their transcripts were published.
 
 ## 6. Interview questions
 
@@ -86,7 +90,7 @@ Optional follow-ups: “Can you give an example?”, “What happened next?”, 
 
 ## 7. Evidence categories
 
-- **USER-EVIDENCE:** a finding paraphrased from a real discussion held for this project.
+- **USER-EVIDENCE:** a finding from a real discussion held for this project, backed by its transcript.
 - **LITERATURE:** a finding supported by a publication in the literature matrix.
 - **ASSUMPTION:** project reasoning that has not yet been confirmed by users.
 
@@ -152,8 +156,8 @@ Outreach messages are not evidence; only completed discussions and received surv
 
 ## 14. Questions for the supervisor
 
-1. Is the anonymous survey with short follow-up discussions an acceptable format? Asked on 21 Oct (Q-03); to be discussed on 23 Oct.
-2. Is any ethics or university approval needed for the survey and the discussions? On the agenda for 23 Oct.
+1. Is the anonymous survey with short follow-up discussions an acceptable format? Asked on 21 Oct (Q-03). Discussed on 23 Oct: the supervisor asked to record the answers as transcripts (FB-15).
+2. Is any ethics or university approval needed for the survey and the discussions? Not reached at the meeting on 23 Oct; still to be asked.
 3. Does a senior medical student count as a respondent only with actual clinical or ward experience? Not asked yet.
 4. Can the supervisor suggest suitable respondents? Not asked yet.
 5. If fewer than three discussions can be completed, which other evidence is acceptable? Not asked yet.
@@ -170,7 +174,8 @@ Answers are recorded in the [feedback log](../11-feedback-log.md).
 | 22 Oct | Follow-up held with R1 |
 | 21–22 Oct | Collect survey answers and hold follow-up discussions; update the register after each one |
 | 22 Oct | Write synthesis and map findings to requirements (DIP-8) |
-| 23 Oct | Apply confirmed changes to requirements and prototype |
+| 23 Oct | Supervisor meeting; transcripts published with the respondents' agreement; the five proposed changes adopted in the requirements |
+| From 24 Oct | Further respondents and the user check of the prototype screens |
 
 If fewer than three valid discussions are obtained, the actual number is reported and the supervisor is asked which other evidence is acceptable.
 
@@ -189,6 +194,6 @@ This component is complete when:
 
 - 2 discussions so far; at least one more is needed.
 - The primary user is supported by the first answers (AS-01), but on two respondents only.
-- The concrete sepsis direction remains subject to supervisor review (research justification, 23 Oct).
-- Whether the survey and the short discussions need any ethics or university approval has not been asked yet; it is on the agenda for the meeting on 23 Oct.
-- Proposed requirement changes ([user-evidence.md](user-evidence.md) §5) are applied after the meeting on 23 Oct.
+- The supervisor called the sepsis direction a good idea on 23 Oct, provided it is planned in depth (feedback log Q-01).
+- Whether the survey and the short discussions need any ethics or university approval has not been asked yet.
+- The proposed requirement changes ([user-evidence.md](user-evidence.md) §5) were adopted on 23 Oct; the first values of the new workflow (30-minute acknowledgement limit, 10-point re-alert margin) still have to be checked with respondents.
